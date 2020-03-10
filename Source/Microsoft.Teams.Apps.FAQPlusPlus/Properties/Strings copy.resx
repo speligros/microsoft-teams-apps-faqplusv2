@@ -208,7 +208,7 @@ I am your friendly Q&amp;A bot that helps you provide support to people who inte
     <comment>Welcome message when bot is added to a new team.</comment>
   </data>
   <data name="CustomMessage" xml:space="preserve">
-    <value>No he encontrado ninguna respuesta para tu pregunta. ¿Quieres que te conecte con un experto?</value>
+    <value>No he encontrI didn't find a matching answer for this question. Do you want me to ask an expert?</value>
     <comment>Message when user asks random question to the bot.</comment>
   </data>
   <data name="QuestionAskedFactTitle" xml:space="preserve">
