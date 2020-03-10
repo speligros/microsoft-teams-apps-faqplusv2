@@ -936,12 +936,12 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                         Text = Strings.ResponseHeaderText,
                         Wrap = true,
                     },
-                    new AdaptiveTextBlock
+                   /* new AdaptiveTextBlock
                     {
                         Size = AdaptiveTextSize.Default,
                         Wrap = true,
                         Text = queryResult?.Questions[0],
-                    },
+                    },*/
                     new AdaptiveTextBlock
                     {
                         Wrap = true,
