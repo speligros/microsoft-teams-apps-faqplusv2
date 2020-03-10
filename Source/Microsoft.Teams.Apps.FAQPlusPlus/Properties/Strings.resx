@@ -480,15 +480,15 @@ Soy tu bot amigable que le ayuda a proporcionar apoyo a las personas que interac
     <comment>Error message to show if image url is not valid while adding or editing the QnA pair.</comment>
   </data>
   <data name="EmptyImageUrlErrorText" xml:space="preserve">
-    <value>Image url can not be empty.</value>
+    <value>La url de la imagen no puede estar en blanco.</value>
     <comment>Error message to show if image url text box is empty while adding or editing the QnA pair.</comment>
   </data>
   <data name="EntryCreatedByText" xml:space="preserve">
-    <value>Created by</value>
+    <value>Creado por</value>
     <comment>Show message on adaptive card, after adding the QnA pair.</comment>
   </data>
   <data name="DescriptionPlaceholderText" xml:space="preserve">
-    <value>Enter information (500 characters max)</value>
+    <value>Introducir información (500 characters max)</value>
     <comment>Placeholder text for description text box.</comment>
   </data>
   <data name="ImageUrlPlaceholderText" xml:space="preserve">
@@ -496,7 +496,7 @@ Soy tu bot amigable que le ayuda a proporcionar apoyo a las personas que interac
     <comment>Placeholder text for image url text box.</comment>
   </data>
   <data name="QuestionPlaceholderText" xml:space="preserve">
-    <value>Enter information (100 characters max)</value>
+    <value>Introducir información (100 characters max)</value>
     <comment>Placeholder text for question text box.</comment>
   </data>
   <data name="RedirectionUrlPlaceholderText" xml:space="preserve">
@@ -504,11 +504,11 @@ Soy tu bot amigable que le ayuda a proporcionar apoyo a las personas que interac
     <comment>Placeholder text for redirection url text box.</comment>
   </data>
   <data name="SubtitlePlaceholderText" xml:space="preserve">
-    <value>Enter information (20 characters max)</value>
+    <value>Introducir información (20 characters max)</value>
     <comment>Placeholder text for subtitle text box.</comment>
   </data>
   <data name="TitlePlaceholderText" xml:space="preserve">
-    <value>Enter information (50 characters max)</value>
+    <value>Introducir información (50 characters max)</value>
     <comment>Placeholder text for title text box.</comment>
   </data>
   <data name="BackButtonText" xml:space="preserve">
@@ -516,27 +516,27 @@ Soy tu bot amigable que le ayuda a proporcionar apoyo a las personas que interac
     <comment>The back button text on the add/edit QnA pair task module, while previewing the card.</comment>
   </data>
   <data name="InvalidRedirectUrlText" xml:space="preserve">
-    <value>Redirect URL is not valid.</value>
+    <value>La URL de redirect no es valida.</value>
     <comment>Error message to show if redirection url is not valid while adding or editing the QnA pair.</comment>
   </data>
   <data name="DescriptionLabelText" xml:space="preserve">
-    <value>*Description (Markdown supported)</value>
+    <value>*Descripción (Markdown supported)</value>
     <comment>Label text for description text box.</comment>
   </data>
   <data name="QuestionLabelText" xml:space="preserve">
-    <value>*Question</value>
+    <value>*Pregunta</value>
     <comment>Label text for question text box.</comment>
   </data>
   <data name="TitleLabelText" xml:space="preserve">
-    <value>Title (Markdown supported)</value>
+    <value>Titulo (Markdown supported)</value>
     <comment>Label text for title text box.</comment>
   </data>
   <data name="ImageLabelText" xml:space="preserve">
-    <value>Image URL</value>
+    <value>URL de la imagen</value>
     <comment>Label text for image url text box.</comment>
   </data>
   <data name="RedirectionLabelText" xml:space="preserve">
-    <value>Redirection URL</value>
+    <value>URL de redirection</value>
     <comment>Label text for redirection url text box.</comment>
   </data>
   <data name="SubtitleLabelText" xml:space="preserve">
@@ -548,11 +548,11 @@ Soy tu bot amigable que le ayuda a proporcionar apoyo a las personas que interac
     <comment>Header text for update history adaptiver card. which shows the history of actions performed by users on a QnA pair.</comment>
   </data>
   <data name="EmptyTitleErrorText" xml:space="preserve">
-    <value>Title cannot be empty.</value>
+    <value>El titulo no puede estar vacio.</value>
     <comment>Error message to show if title text box is empty while adding or editing the QnA pair.</comment>
   </data>
   <data name="GoToThread" xml:space="preserve">
-    <value>View details</value>
+    <value>Ver detalles</value>
     <comment>Button title for the card created through Messaging Extension</comment>
   </data>
   <data name="PreviewButtonText" xml:space="preserve">
@@ -568,25 +568,25 @@ Soy tu bot amigable que le ayuda a proporcionar apoyo a las personas que interac
     <comment>Used in date string format for adaptive card. {0} is for date and {1} is for time.</comment>
   </data>
   <data name="ErrorMessage" xml:space="preserve">
-    <value>Something went wrong. Please try again later.</value>
+    <value>Algo ha ido mal. Por favor, intentalo mas tarde.</value>
     <comment>Error message to show if there is any exception.</comment>
   </data>
   <data name="EmptyDescriptionErrorText" xml:space="preserve">
-    <value>Description cannot be empty.</value>
+    <value>La descripción no puede estar vacia.</value>
     <comment>Error message to show if description text box is empty while adding or editing the QnA pair.</comment>
   </data>
   <data name="OptionalFieldDisplayText" xml:space="preserve">
-    <value>Optional Fields</value>
+    <value>Campos Opcionales</value>
   </data>
   <data name="SuggestedText" xml:space="preserve">
-    <value>The optional fields below can be used to add additional details to the answer.</value>
+    <value>Los campos opcionales a continuación se pueden utilizar para agregar detalles adicionales a la respuesta.</value>
   </data>
   <data name="ManuallyAddedQuestionMessage" xml:space="preserve">
-    <value>Manually added question</value>
+    <value>Pregunta añadida manualmente</value>
     <comment>Question answer pair added manually in QnA Maker</comment>
   </data>
   <data name="UpdateHistoryDateHeaderText" xml:space="preserve">
-    <value>Date</value>
+    <value>Fecha</value>
     <comment>Date header text in update history adaptive card text.</comment>
   </data>
 </root>
