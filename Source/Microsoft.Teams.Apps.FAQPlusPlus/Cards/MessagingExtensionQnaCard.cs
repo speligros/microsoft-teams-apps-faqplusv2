@@ -942,13 +942,13 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                         Wrap = true,
                         Text = queryResult?.Questions[0],
                     },
-                    /*new AdaptiveTextBlock
+                    new AdaptiveTextBlock
                     {
                         Wrap = true,
                         Text = answerModel?.Title,
                         Size = AdaptiveTextSize.Large,
                         Weight = AdaptiveTextWeight.Bolder,
-                    },*/
+                    },
                     new AdaptiveTextBlock
                     {
                         Text = answerModel?.Subtitle,
