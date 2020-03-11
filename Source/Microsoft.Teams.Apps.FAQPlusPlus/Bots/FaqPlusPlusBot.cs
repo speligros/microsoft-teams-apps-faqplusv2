@@ -116,6 +116,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             BotFrameworkAdapter botAdapter,
             IMemoryCache memoryCache,
             IKnowledgeBaseSearchService knowledgeBaseSearchService,
+            ILuisServiceProvider luisServiceProvider,
             IOptionsMonitor<BotSettings> optionsAccessor,
             ILogger<FaqPlusPlusBot> logger)
         {
@@ -126,6 +127,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             this.qnaServiceProvider = qnaServiceProvider;
             this.activityStorageProvider = activityStorageProvider;
             this.searchService = searchService;
+            this.luisServiceProvider = luisServiceProvider;
             this.appId = this.options.MicrosoftAppId;
             this.botAdapter = botAdapter;
             this.accessCache = memoryCache;
