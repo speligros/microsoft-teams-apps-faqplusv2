@@ -100,12 +100,6 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                 {
                     new AdaptiveTextBlock
                     {
-                        Weight = AdaptiveTextWeight.Bolder,
-                        Text = Strings.ResponseHeaderText,
-                        Wrap = true,
-                    },
-                    new AdaptiveTextBlock
-                    {
                         // TODO should be a localized text: String.XXXXXX
                         Text = "¿Ha sido útil la respuesta?",
                         Wrap = true,
@@ -156,7 +150,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
         // <summary>
         /// Construct the response card for "Do you need more help?" - when the user resported the info was not helpful, ask for more help.
         /// </summary>
-        public static Attachment GetNeedMoreHelpCard(string question, string answer, string userQuestion)
+        public static Attachment GetNeedMoreHelpCard(string question)
         {
             AdaptiveCard responseCard = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
             {
@@ -188,8 +182,8 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                                 DisplayText = Strings.AskAnExpertDisplayText,
                                 Text = Constants.AskAnExpert,
                             },
-                            UserQuestion = userQuestion,
-                            KnowledgeBaseAnswer = answer,
+                            UserQuestion = question,
+                            KnowledgeBaseAnswer = "",
                         },
                     },
                     new AdaptiveSubmitAction
@@ -203,8 +197,8 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                                 DisplayText = Strings.ShareFeedbackDisplayText,
                                 Text = Constants.ShareFeedback,
                             },
-                            UserQuestion = userQuestion,
-                            KnowledgeBaseAnswer = answer,
+                            UserQuestion = question,
+                            KnowledgeBaseAnswer = "",
                         },
                     },
                 },

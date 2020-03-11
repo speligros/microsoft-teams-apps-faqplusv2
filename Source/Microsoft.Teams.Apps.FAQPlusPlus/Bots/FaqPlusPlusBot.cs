@@ -770,9 +770,62 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                 await this.OnAdaptiveCardSubmitInPersonalChatAsync(message, turnContext, cancellationToken).ConfigureAwait(false);
                 return;
             }
-
             string text = message.Text?.ToLower()?.Trim() ?? string.Empty;
 
+            if (!this.luisServiceProvider.IsConfigured())
+            {
+                this.logger.LogInformation("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file.");
+                await turnContext.SendActivityAsync(MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file.", inputHint: InputHints.IgnoringInput), cancellationToken);
+                return;
+            }
+            var luisResult = await this.luisServiceProvider.RecognizeAsync<RecognizerResult>(turnContext, cancellationToken);
+            this.logger.LogInformation("Identified intent [" + luisResult.GetTopScoringIntent().intent + "] with score [" + luisResult.GetTopScoringIntent().score + "]");
+
+            switch (luisResult.GetTopScoringIntent().intent)
+            {
+                case Constants.AskAnExpert:
+                    this.logger.LogInformation("Sending user ask an expert card");
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(AskAnExpertCard.GetCard())).ConfigureAwait(false);
+                    break;
+
+                case Constants.ShareFeedback:
+                    this.logger.LogInformation("Sending user feedback card");
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ShareFeedbackCard.GetCard())).ConfigureAwait(false);
+                    break;
+
+                case Constants.TakeATour:
+                    this.logger.LogInformation("Sending user tour card");
+                    var userTourCards = TourCarousel.GetUserTourCards(this.appBaseUri);
+                    await turnContext.SendActivityAsync(MessageFactory.Carousel(userTourCards)).ConfigureAwait(false);
+                    break;
+
+                case Constants.YesCommand:
+                    // TODO verify it comes from the question "Was it helpful?"
+                    this.logger.LogInformation("Yes option");
+                    // TODO should be a localized text: String.XXXXXX
+                    String responseText = "Genial, dime si puedo ayudarte en algo más";
+                    await turnContext.SendActivityAsync(MessageFactory.Text(responseText, responseText)).ConfigureAwait(false);
+                    break;
+
+                case Constants.NoCommand:
+                    // TODO verify it comes from the question "Was it helpful?"
+                    // Send the user to "Need more help?" case
+                    this.logger.LogInformation("No option");
+                    // TODO guardar pregunta original
+                    string userQuestion = "<pregunta original del usuario>";
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNeedMoreHelpCard(userQuestion))).ConfigureAwait(false);
+                    break;
+
+                default:
+                    // Send to QNA
+                    this.logger.LogInformation("Sending input to QnAMaker");
+                    await this.GetQuestionAnswerReplyAsync(turnContext, text).ConfigureAwait(false);
+                    // Was the answer helpful?
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetWasItHelpfulCard())).ConfigureAwait(false);
+                    break;
+            }
+
+            /*
             switch (text)
             {
                 case Constants.AskAnExpert:
@@ -796,6 +849,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     await this.GetQuestionAnswerReplyAsync(turnContext, text).ConfigureAwait(false);
                     break;
             }
+            */
         }
 
         /// <summary>
@@ -1403,10 +1457,6 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             ITurnContext<IMessageActivity> turnContext,
             string text)
         {
-            // TODO test luisRecognizer
-            this.logger.LogInformation("Luis config data AppId: " + luisServiceProvider.GetAppId(), SeverityLevel.Information);
-            this.logger.LogInformation("Luis config data APIKey: " + luisServiceProvider.GetAPIKey(), SeverityLevel.Information);
-            this.logger.LogInformation("Luis config data APIHostName: " + luisServiceProvider.GetAPIHostName(), SeverityLevel.Information);
             try
             {
                 var queryResult = await this.qnaServiceProvider.GenerateAnswerAsync(question: text, isTestKnowledgeBase: false).ConfigureAwait(false);
@@ -1430,8 +1480,6 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                         // Replaced response card for a text
                         // await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetCard(answerData.Questions.FirstOrDefault(), answerData.Answer, text))).ConfigureAwait(false);
                         await turnContext.SendActivityAsync(MessageFactory.Text(answerData.Answer, answerData.Answer)).ConfigureAwait(false);
-                        // Was the answer helpful?
-                        await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetWasItHelpfulCard())).ConfigureAwait(false);
                     }
                 }
                 else

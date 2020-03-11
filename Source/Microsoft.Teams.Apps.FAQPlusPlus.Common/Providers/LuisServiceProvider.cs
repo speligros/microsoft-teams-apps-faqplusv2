@@ -8,12 +8,15 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Common.Providers
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Web;
     using Microsoft.Azure.CognitiveServices.Knowledge.QnAMaker;
     using Microsoft.Azure.CognitiveServices.Knowledge.QnAMaker.Models;
-    using Microsoft.Extensions.Options;
+    using Microsoft.Bot.Builder;
+    using Microsoft.Bot.Builder.AI.Luis;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using Microsoft.Teams.Apps.FAQPlusPlus.Common.Models;
     using Microsoft.Teams.Apps.FAQPlusPlus.Common.Models.Configuration;
 
@@ -30,6 +33,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Common.Providers
         private readonly IConfigurationDataProvider configurationProvider;
         private readonly LuisSettings options;
         // TODO add LuisRecognizer client
+        private LuisRecognizer recognizer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisServiceProvider"/> class.
@@ -40,22 +44,33 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Common.Providers
         {
             this.configurationProvider = configurationProvider;
             this.options = optionsAccessor.CurrentValue;
-            // TODO LuisRecognizer
+            this.InitializeLuisRecognizer();
         }
 
-        public string GetAppId()
+        private void InitializeLuisRecognizer()
         {
-            return this.options.AppId;
+            var luisApplication = new LuisApplication(
+                this.options.AppId,
+                this.options.APIKey,
+                "https://" + this.options.APIHostName);
+            this.recognizer = new LuisRecognizer(luisApplication);
         }
 
-        public string GetAPIHostName()
+
+        /// <inheritdoc/>
+        public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+            => await this.recognizer.RecognizeAsync(turnContext, cancellationToken);
+
+        /// <inheritdoc/>
+        public virtual async Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken)
+            where T : IRecognizerConvert, new()
+            => await this.recognizer.RecognizeAsync<T>(turnContext, cancellationToken);
+
+        /// <inheritdoc/>
+        public bool IsConfigured()
         {
-            return this.options.APIHostName;
+            return this.recognizer != null;
         }
 
-        public string GetAPIKey()
-        {
-            return this.options.APIKey;
-        }
     }
 }

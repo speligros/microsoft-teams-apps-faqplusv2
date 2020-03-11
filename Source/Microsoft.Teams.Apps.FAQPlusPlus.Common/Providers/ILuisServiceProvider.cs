@@ -1,8 +1,10 @@
 ﻿namespace Microsoft.Teams.Apps.FAQPlusPlus.Common.Providers
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.CognitiveServices.Knowledge.QnAMaker.Models;
+    using Microsoft.Bot.Builder;
+    using Microsoft.Bot.Builder.AI.Luis;
     using Microsoft.Teams.Apps.FAQPlusPlus.Common.Models;
 
     /// <summary>
@@ -11,21 +13,27 @@
     public interface ILuisServiceProvider
     {
         /// <summary>
-        /// Sample
+        /// .
         /// </summary>
-        /// <returns>Config value</returns>
-        string GetAppId();
+        /// <param name="turnContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Sample
+        /// .
         /// </summary>
-        /// <returns>Config value</returns>
-        string GetAPIHostName();
+        /// <typeparam name="T"></typeparam>
+        /// <param name="turnContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) 
+            where T : IRecognizerConvert, new();
 
         /// <summary>
-        /// Sample
+        /// .
         /// </summary>
-        /// <returns>Config value</returns>
-        string GetAPIKey();
+        /// <returns></returns>
+        bool IsConfigured();
     }
 }
