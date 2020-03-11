@@ -803,7 +803,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     // TODO verify it comes from the question "Was it helpful?"
                     this.logger.LogInformation("Yes option");
                     // TODO should be a localized text: String.XXXXXX
-                    String responseText = "Genial, dime si puedo ayudarte en algo más";
+                    string responseText = "Genial, dime si puedo ayudarte en algo más";
                     await turnContext.SendActivityAsync(MessageFactory.Text(responseText, responseText)).ConfigureAwait(false);
                     break;
 
