@@ -14,6 +14,8 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.Azure.CognitiveServices.Knowledge.QnAMaker.Models;
     using Microsoft.Bot.Builder;
+    using Microsoft.Bot.Builder.Dialogs;
+    using Microsoft.Bot.Builder.Dialogs.Choices;
     using Microsoft.Bot.Builder.Teams;
     using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
@@ -35,7 +37,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
     /// <summary>
     /// Class that handles the teams activity of Faq Plus bot and messaging extension.
     /// </summary>
-    public class FaqPlusPlusBot : TeamsActivityHandler
+    public class FaqPlusPlusBot<T> : TeamsActivityHandler where T : Dialog
     {
         /// <summary>
         ///  Default access cache expiry in days to check if user using the app is a valid SME or not.
@@ -88,9 +90,15 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
         private readonly int accessCacheExpiryInDays;
         private readonly string appBaseUri;
         private readonly IKnowledgeBaseSearchService knowledgeBaseSearchService;
-        private readonly ILogger<FaqPlusPlusBot> logger;
-        private IQnaServiceProvider qnaServiceProvider;
+        private readonly ILogger<FaqPlusPlusBot<T>> logger;
         private ILuisServiceProvider luisServiceProvider;
+        protected readonly Dialog dialog;
+
+        protected readonly BotState ConversationState;
+        protected readonly BotState UserState;
+
+        // Should be deleted
+        private IQnaServiceProvider qnaServiceProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FaqPlusPlusBot"/> class.
@@ -107,6 +115,9 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
         /// <param name="optionsAccessor">A set of key/value application configuration properties for FaqPlusPlus bot.</param>
         /// <param name="logger">Instance to send logs to the Application Insights service.</param>
         public FaqPlusPlusBot(
+            ConversationState conversationState, 
+            UserState userState,
+            T dialog,
             Common.Providers.IConfigurationDataProvider configurationProvider,
             MicrosoftAppCredentials microsoftAppCredentials,
             ITicketsProvider ticketsProvider,
@@ -118,8 +129,10 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             IKnowledgeBaseSearchService knowledgeBaseSearchService,
             ILuisServiceProvider luisServiceProvider,
             IOptionsMonitor<BotSettings> optionsAccessor,
-            ILogger<FaqPlusPlusBot> logger)
+            ILogger<FaqPlusPlusBot<T>> logger)
         {
+            this.ConversationState = conversationState;
+            this.UserState = userState;
             this.configurationProvider = configurationProvider;
             this.microsoftAppCredentials = microsoftAppCredentials;
             this.ticketsProvider = ticketsProvider;
@@ -128,6 +141,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             this.activityStorageProvider = activityStorageProvider;
             this.searchService = searchService;
             this.luisServiceProvider = luisServiceProvider;
+            this.dialog = dialog;
             this.appId = this.options.MicrosoftAppId;
             this.botAdapter = botAdapter;
             this.accessCache = memoryCache;
@@ -173,13 +187,21 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(locale);
                 }
 
-                return base.OnTurnAsync(turnContext, cancellationToken);
+                // return base.OnTurnAsync(turnContext, cancellationToken);
             }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Error at OnTurnAsync()");
-                return base.OnTurnAsync(turnContext, cancellationToken);
+                //return base.OnTurnAsync(turnContext, cancellationToken);
             }
+
+            var task = base.OnTurnAsync(turnContext, cancellationToken);
+
+            // Save any state changes that might have occured during the turn.
+            this.ConversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+            this.UserState.SaveChangesAsync(turnContext, false, cancellationToken);
+
+            return task;
         }
 
         /// <summary>
@@ -782,6 +804,23 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             var topIntent = luisResult.GetTopScoringIntent();
             this.logger.LogInformation("LUIS identified intent [" + topIntent.intent + "] with score [" + topIntent.score + "] for the following input [" + text + "]");
 
+            switch (topIntent.intent)
+            {
+                case Constants.SaluteCommand:
+                    this.logger.LogInformation("Salute option");
+                    // TODO should be a localized text: String.XXXXXX
+                    string saluteResponseText = "Hola!";
+                    await turnContext.SendActivityAsync(MessageFactory.Text(saluteResponseText, saluteResponseText)).ConfigureAwait(false);
+                    break;
+                default:
+                    this.logger.LogInformation("Sending input to Dialog");
+                    // Run the Dialog with the new message Activity.
+                    await this.dialog.RunAsync(turnContext, this.ConversationState.CreateProperty<DialogState>(nameof(DialogState)), cancellationToken);
+                    break;
+            }
+
+            /* 
+             Old version
             switch (topIntent.intent) {
                 case Constants.AskAnExpert:
                     this.logger.LogInformation("Sending user ask an expert card");
@@ -839,6 +878,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     await this.GetQuestionAnswerReplyAsync(turnContext, text).ConfigureAwait(false);
                     break;
             }
+            */
         }
 
         /// <summary>
@@ -1433,69 +1473,6 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                         return default;
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// Get the reply to a question asked by end user.
-        /// </summary>
-        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
-        /// <param name="text">Text message.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        private async Task GetQuestionAnswerReplyAsync(
-            ITurnContext<IMessageActivity> turnContext,
-            string text)
-        {
-            try
-            {
-                var queryResult = await this.qnaServiceProvider.GenerateAnswerAsync(question: text, isTestKnowledgeBase: false).ConfigureAwait(false);
-                var answerData = queryResult.Answers.First();
-                this.logger.LogInformation("QNA identified answer [" + answerData.Id + "] with score [" + answerData.Score + "] for text [" + text + "]");
-
-                if (answerData.Id != -1) {
-                    AnswerModel answerModel = new AnswerModel();
-                    if (Validators.IsValidJSON(answerData.Answer)) {
-                        answerModel = JsonConvert.DeserializeObject<AnswerModel>(answerData.Answer);
-                    }
-
-                    if (!string.IsNullOrEmpty(answerModel?.Title) || !string.IsNullOrEmpty(answerModel?.Subtitle) || !string.IsNullOrEmpty(answerModel?.ImageUrl) || !string.IsNullOrEmpty(answerModel?.RedirectionUrl)) {
-                        await turnContext.SendActivityAsync(MessageFactory.Attachment(MessagingExtensionQnaCard.GetEndUserRichCard(text, answerData))).ConfigureAwait(false);
-                    } else if ((answerData.Context != null) && (answerData.Context.Prompts != null) && (answerData.Context.Prompts.Count > 0)) {
-                        this.logger.LogInformation("QNA answer has prompts [" + answerData.Context.Prompts.Count + "]");
-                        // Replaced response card for a text
-                        await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetAnswerCard(answerData.Questions.FirstOrDefault(), answerData.Answer, text, answerData.Context.Prompts))).ConfigureAwait(false);
-                    } else {
-                        this.logger.LogInformation("QNA answer has no prompts");
-                        // Replaced response card for a text
-                        // await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetCard(answerData.Questions.FirstOrDefault(), answerData.Answer, text))).ConfigureAwait(false);
-                        await turnContext.SendActivityAsync(MessageFactory.Text(answerData.Answer, answerData.Answer)).ConfigureAwait(false);
-                        // Was the answer helpful?
-                        await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetWasItHelpfulCard())).ConfigureAwait(false);
-
-                    }
-                } else {
-                    await turnContext.SendActivityAsync(MessageFactory.Attachment(UnrecognizedInputCard.GetCard(text))).ConfigureAwait(false);
-                }
-            }
-            catch (Exception ex)
-            {
-                // Check if knowledge base is empty and has not published yet when end user is asking a question to bot.
-                if (((ErrorResponseException)ex).Response.StatusCode == HttpStatusCode.BadRequest)
-                {
-                    var knowledgeBaseId = await this.configurationProvider.GetSavedEntityDetailAsync(Constants.KnowledgeBaseEntityId).ConfigureAwait(false);
-                    var hasPublished = await this.qnaServiceProvider.GetInitialPublishedStatusAsync(knowledgeBaseId).ConfigureAwait(false);
-
-                    // Check if knowledge base has not published yet.
-                    if (!hasPublished)
-                    {
-                        this.logger.LogError(ex, "Error while fetching the qna pair: knowledge base may be empty or it has not published yet.");
-                        await turnContext.SendActivityAsync(MessageFactory.Attachment(UnrecognizedInputCard.GetCard(text))).ConfigureAwait(false);
-                        return;
-                    }
-                }
-
-                // Throw the error at calling place, if there is any generic exception which is not caught.
-                throw;
             }
         }
     }

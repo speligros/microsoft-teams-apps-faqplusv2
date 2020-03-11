@@ -121,10 +121,14 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus
                 provider.GetRequiredService<Common.Providers.IConfigurationDataProvider>(),
                 provider.GetRequiredService <IOptionsMonitor<LuisSettings>>()));
 
+            // The Dialog that will be run by the bot.
+            services.AddSingleton<SupportDialog>();
+
             services.AddSingleton<ISearchService, SearchService>();
             services.AddSingleton<IMemoryCache, MemoryCache>();
             services.AddTransient(sp => (BotFrameworkAdapter)sp.GetRequiredService<IBotFrameworkHttpAdapter>());
-            services.AddTransient<IBot, FaqPlusPlusBot>();
+            services.AddTransient<IBot, FaqPlusPlusBot<SupportDialog>>();
+
 
             // Create the telemetry middleware(used by the telemetry initializer) to track conversation events
             services.AddSingleton<TelemetryLoggerMiddleware>();

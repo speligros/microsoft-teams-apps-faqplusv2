@@ -1,50 +1,157 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mime;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Schema;
-
-namespace Microsoft.Teams.Apps.FAQPlusPlus.Dialogs
+﻿namespace Microsoft.Teams.Apps.FAQPlusPlus.Dialogs
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Mime;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.Azure.CognitiveServices.Knowledge.QnAMaker.Models;
+    using Microsoft.Bot.Builder;
+    using Microsoft.Bot.Builder.Dialogs;
+    using Microsoft.Bot.Builder.Dialogs.Choices;
+    using Microsoft.Bot.Builder.Teams;
+    using Microsoft.Bot.Connector;
+    using Microsoft.Bot.Schema;
+    using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using Microsoft.Teams.Apps.FAQPlusPlus.Cards;
+    using Microsoft.Teams.Apps.FAQPlusPlus.Common;
+    using Microsoft.Teams.Apps.FAQPlusPlus.Common.Models;
+    using Microsoft.Teams.Apps.FAQPlusPlus.Common.Models.Configuration;
+    using Microsoft.Teams.Apps.FAQPlusPlus.Common.Providers;
+    using Microsoft.Teams.Apps.FAQPlusPlus.Helpers;
+
+    using ErrorResponseException = Microsoft.Azure.CognitiveServices.Knowledge.QnAMaker.Models.ErrorResponseException;
+
+
+
     public class SupportDialog : ComponentDialog
     {
-        private readonly IStatePropertyAccessor<SupportStatus> _supportStatus;
+        private readonly ILogger<SupportDialog> _logger;
 
-        public SupportDialog(UserState userState)
+        private readonly IStatePropertyAccessor<SupportStatus> _supportStatus;        
+
+        private IQnaServiceProvider _qnaServiceProvider;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SupportDialog"/> class.
+        /// </summary>
+        /// <param name="userState"></param>
+        /// <param name="logger"></param>
+        public SupportDialog(
+            UserState userState,
+            ILogger<SupportDialog> logger)
             : base(nameof(SupportDialog))
         {
-            _supportStatus = userState.CreateProperty<SupportStatus>("SupportStatus");
+            this._logger = logger;
+            this._supportStatus = userState.CreateProperty<SupportStatus>("SupportStatus");
 
+            /* TODO original values for steps:
+                TransportStepAsync, NameStepAsync, NameConfirmStepAsync, AgeStepAsync, PictureStepAsync, ConfirmStepAsync, SummaryStepAsync,
+            */
             // This array defines how the Waterfall will execute.
             var waterfallSteps = new WaterfallStep[]
             {
-                TransportStepAsync,
-                NameStepAsync,
-                NameConfirmStepAsync,
-                AgeStepAsync,
-                PictureStepAsync,
-                ConfirmStepAsync,
-                SummaryStepAsync,
+                SearchQNAStepAsync,
+                AskIsUsefulStepAsync,
+                AskIsMoreHelpRequiredStepAsync,
+                AskFurtherActionStepAsync,
+                RegisterInfoForExpertStepAsync,
+                ShowExpertDetailsStepAsync,
+                RegisterInfoForTicketStepAsync,
+                ShowTicketDetailsStepAsync,
+                GoodbyeStepAsync
             };
 
             // Add named dialogs to the DialogSet. These names are saved in the dialog state.
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), waterfallSteps));
-            AddDialog(new TextPrompt(nameof(TextPrompt)));
-            AddDialog(new NumberPrompt<int>(nameof(NumberPrompt<int>), AgePromptValidatorAsync));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
-            AddDialog(new AttachmentPrompt(nameof(AttachmentPrompt), PicturePromptValidatorAsync));
 
             // The initial child Dialog to run.
-            InitialDialogId = nameof(WaterfallDialog);
+            this.InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private static async Task<DialogTurnResult> TransportStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        /// <summary>
+        /// Get the reply to a question asked by end user.
+        /// </summary>
+        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
+        /// <param name="text">Text message.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        private async Task GetQuestionAnswerReplyAsync(
+            ITurnContext<IMessageActivity> turnContext,
+            string text)
+        {
+            try
+            {
+                var queryResult = await this._qnaServiceProvider.GenerateAnswerAsync(question: text, isTestKnowledgeBase: false).ConfigureAwait(false);
+                var answerData = queryResult.Answers.First();
+                this._logger.LogInformation("QNA identified answer [" + answerData.Id + "] with score [" + answerData.Score + "] for text [" + text + "]");
+
+                if (answerData.Id != -1)
+                {
+                    AnswerModel answerModel = new AnswerModel();
+                    if (Validators.IsValidJSON(answerData.Answer))
+                    {
+                        answerModel = JsonConvert.DeserializeObject<AnswerModel>(answerData.Answer);
+                    }
+
+                    if (!string.IsNullOrEmpty(answerModel?.Title) || !string.IsNullOrEmpty(answerModel?.Subtitle) || !string.IsNullOrEmpty(answerModel?.ImageUrl) || !string.IsNullOrEmpty(answerModel?.RedirectionUrl))
+                    {
+                        await turnContext.SendActivityAsync(MessageFactory.Attachment(MessagingExtensionQnaCard.GetEndUserRichCard(text, answerData))).ConfigureAwait(false);
+                    }
+                    else if ((answerData.Context != null) && (answerData.Context.Prompts != null) && (answerData.Context.Prompts.Count > 0))
+                    {
+                        this._logger.LogInformation("QNA answer has prompts [" + answerData.Context.Prompts.Count + "]");
+                        // Replaced response card for a text
+                        await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetAnswerCard(answerData.Questions.FirstOrDefault(), answerData.Answer, text, answerData.Context.Prompts))).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        this._logger.LogInformation("QNA answer has no prompts");
+                        // Replaced response card for a text
+                        // await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetCard(answerData.Questions.FirstOrDefault(), answerData.Answer, text))).ConfigureAwait(false);
+                        await turnContext.SendActivityAsync(MessageFactory.Text(answerData.Answer, answerData.Answer)).ConfigureAwait(false);
+                        // Was the answer helpful?
+                        await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetWasItHelpfulCard())).ConfigureAwait(false);
+
+                    }
+                }
+                else
+                {
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(UnrecognizedInputCard.GetCard(text))).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Check if knowledge base is empty and has not published yet when end user is asking a question to bot.
+                if (((ErrorResponseException)ex).Response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    var knowledgeBaseId = await this._configurationProvider.GetSavedEntityDetailAsync(Constants.KnowledgeBaseEntityId).ConfigureAwait(false);
+                    var hasPublished = await this._qnaServiceProvider.GetInitialPublishedStatusAsync(knowledgeBaseId).ConfigureAwait(false);
+
+                    // Check if knowledge base has not published yet.
+                    if (!hasPublished)
+                    {
+                        this._logger.LogError(ex, "Error while fetching the qna pair: knowledge base may be empty or it has not published yet.");
+                        await turnContext.SendActivityAsync(MessageFactory.Attachment(UnrecognizedInputCard.GetCard(text))).ConfigureAwait(false);
+                        return;
+                    }
+                }
+
+                // Throw the error at calling place, if there is any generic exception which is not caught.
+                throw;
+            }
+        }
+
+
+        private static async Task<DialogTurnResult> SearchQNAStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
             // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
