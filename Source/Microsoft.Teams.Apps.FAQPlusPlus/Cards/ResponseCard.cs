@@ -11,6 +11,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
     using Microsoft.Teams.Apps.FAQPlusPlus.Common;
     using Microsoft.Teams.Apps.FAQPlusPlus.Common.Models;
     using Microsoft.Teams.Apps.FAQPlusPlus.Properties;
+    using Microsoft.Azure.CognitiveServices.Knowledge.QnAMaker.Models;
 
     /// <summary>
     ///  This class process Response Card- Response by bot when user asks a question to bot.
@@ -89,7 +90,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
             };
         }
 
-        public static Attachment GetAnswerCard(string question, string answer, string userQuestion)
+        public static Attachment GetAnswerCard(string question, string answer, string userQuestion, IList<PromptDTO> prompts )
         {
             AdaptiveCard responseCard = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
             {
@@ -112,8 +113,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                         Wrap = true,
                     },
                 },
-                Actions = new List<AdaptiveAction> {
-                },
+                Actions = GenerateActions(prompts),
             };
 
             return new Attachment
@@ -237,6 +237,29 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                 ContentType = AdaptiveCard.ContentType,
                 Content = responseCard,
             };
+        }
+
+        private static List<AdaptiveAction> GenerateActions(IList<PromptDTO> prompts)
+        {
+            List<AdaptiveAction> actionsList = new List<AdaptiveAction>();
+            foreach (PromptDTO prompt in prompts) {
+                actionsList.Add(new AdaptiveSubmitAction
+                {
+                    Title = prompt.DisplayText,
+                    Data = new ResponseCardPayload
+                    {
+                        MsTeams = new CardAction
+                        {
+                            Type = ActionTypes.MessageBack,
+                            DisplayText = prompt.DisplayText,
+                            Text = prompt.DisplayText,
+                        },
+                    },
+
+                });
+            }
+
+            return actionsList;
         }
     }
 }

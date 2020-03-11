@@ -1463,7 +1463,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     } else if ((answerData.Context != null) && (answerData.Context.Prompts != null) && (answerData.Context.Prompts.Count > 0)) {
                         this.logger.LogInformation("QNA answer has prompts [" + answerData.Context.Prompts.Count + "]");
                         // Replaced response card for a text
-                        await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetAnswerCard(answerData.Questions.FirstOrDefault(), answerData.Answer, text))).ConfigureAwait(false);
+                        await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetAnswerCard(answerData.Questions.FirstOrDefault(), answerData.Answer, text, answerData.Context.Prompts))).ConfigureAwait(false);
                     } else {
                         this.logger.LogInformation("QNA answer has no prompts");
                         // Replaced response card for a text
