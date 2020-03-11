@@ -228,6 +228,136 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
             };
         }
 
+        public static Attachment GetNewUserCard()
+        {
+            AdaptiveCard responseCard = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
+            {
+                Body = new List<AdaptiveElement>
+                {
+                    new AdaptiveTextBlock
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Text = "Nuevo Usuario",
+                        Wrap = true,
+                    },
+                },
+                Actions = new List<AdaptiveAction>
+                {
+                    new AdaptiveSubmitAction
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Title = "Dar de alta usuario",
+                        Data = new ResponseCardPayload
+                        {
+                            MsTeams = new CardAction
+                            {
+                                Type = ActionTypes.MessageBack,
+                                // TODO should be a localized text: String.XXXXXX
+                                DisplayText = "Proceder a alta usuario",
+                                Text = Constants.ShowUserDetailsCommand,
+                            },
+                        },
+                    },
+                },
+            };
+
+            return new Attachment
+            {
+                ContentType = AdaptiveCard.ContentType,
+                Content = responseCard,
+            };
+        }
+
+        public static Attachment GetUserDetailsCard()
+        {
+            AdaptiveCard responseCard = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
+            {
+                Body = new List<AdaptiveElement>
+                {
+                    new AdaptiveTextBlock
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Text = "Detalles de usuario",
+                        Wrap = true,
+                    },
+                },
+                Actions = new List<AdaptiveAction> {
+                },
+            };
+
+            return new Attachment
+            {
+                ContentType = AdaptiveCard.ContentType,
+                Content = responseCard,
+            };
+        }
+
+        public static Attachment GetNewCableRequestCard()
+        {
+            AdaptiveCard responseCard = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
+            {
+                Body = new List<AdaptiveElement>
+                {
+                    new AdaptiveTextBlock
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Text = "Nueva petición de cable",
+                        Wrap = true,
+                    },
+                },
+                Actions = new List<AdaptiveAction>
+                {
+                    new AdaptiveSubmitAction
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Title = "Nueva petición de cable",
+                        Data = new ResponseCardPayload
+                        {
+                            MsTeams = new CardAction
+                            {
+                                Type = ActionTypes.MessageBack,
+                                // TODO should be a localized text: String.XXXXXX
+                                DisplayText = "Proceder a petición de cable",
+                                Text = Constants.ShowCableRequestDetailsCommand,
+                            },
+                        },
+                    },
+                },
+            };
+
+            return new Attachment
+            {
+                ContentType = AdaptiveCard.ContentType,
+                Content = responseCard,
+            };
+        }
+
+        public static Attachment GetCableRequestDetailsCard()
+        {
+            AdaptiveCard responseCard = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
+            {
+                Body = new List<AdaptiveElement>
+                {
+                    new AdaptiveTextBlock
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Text = "Detalles de petición de cable",
+                        Wrap = true,
+                    },
+                },
+                Actions = new List<AdaptiveAction>
+                {
+                },
+            };
+
+            return new Attachment
+            {
+                ContentType = AdaptiveCard.ContentType,
+                Content = responseCard,
+            };
+        }
+
+
         private static List<AdaptiveAction> GenerateActions(IList<PromptDTO> prompts)
         {
             List<AdaptiveAction> actionsList = new List<AdaptiveAction>();

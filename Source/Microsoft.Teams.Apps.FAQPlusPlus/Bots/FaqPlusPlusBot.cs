@@ -783,6 +783,26 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             this.logger.LogInformation("LUIS identified intent [" + topIntent.intent + "] with score [" + topIntent.score + "] for the following input [" + text + "]");
 
             switch (topIntent.intent) {
+                case Constants.NewUserCommand:
+                    this.logger.LogInformation("Proceeding to create a new user");
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewUserCard())).ConfigureAwait(false);
+                    break;
+
+                case Constants.ShowUserDetailsCommand:
+                    this.logger.LogInformation("Showing user details");
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetUserDetailsCard())).ConfigureAwait(false);
+                    break;
+
+                case Constants.NewCableRequestCommand:
+                    this.logger.LogInformation("Proceeding to create a new cable request");
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewCableRequestCard())).ConfigureAwait(false);
+                    break;
+
+                case Constants.ShowCableRequestDetailsCommand:
+                    this.logger.LogInformation("Showing cable request details");
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetCableRequestDetailsCard())).ConfigureAwait(false);
+                    break;
+
                 case Constants.AskAnExpert:
                     this.logger.LogInformation("Sending user ask an expert card");
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(AskAnExpertCard.GetCard())).ConfigureAwait(false);

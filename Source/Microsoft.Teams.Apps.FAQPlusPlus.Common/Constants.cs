@@ -39,6 +39,15 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Common
         /// </summary>
         public const string GoodbyeCommand = "despedida";
 
+        public const string NewUserCommand = "proceder a alta usuario";
+
+        public const string ShowUserDetailsCommand = "mostrar detalles de usuario";
+
+        public const string NewCableRequestCommand = "proceder a petición cable";
+
+        public const string ShowCableRequestDetailsCommand = "mostrar detalles de petición de cable";
+
+
         /// <summary>
         /// Regular expression pattern for valid redirection url.
         /// It checks whether the url is valid or not, while adding/editing the qna pair.
