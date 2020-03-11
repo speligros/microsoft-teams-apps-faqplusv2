@@ -764,25 +764,25 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken)
         {
-            if (!string.IsNullOrEmpty(message.ReplyToId) && (message.Value != null) && ((JObject)message.Value).HasValues)
-            {
+            if (!string.IsNullOrEmpty(message.ReplyToId) && (message.Value != null) && ((JObject)message.Value).HasValues) {
                 this.logger.LogInformation("Card submit in 1:1 chat");
                 await this.OnAdaptiveCardSubmitInPersonalChatAsync(message, turnContext, cancellationToken).ConfigureAwait(false);
                 return;
             }
+
             string text = message.Text?.ToLower()?.Trim() ?? string.Empty;
 
-            if (!this.luisServiceProvider.IsConfigured())
-            {
+            if (!this.luisServiceProvider.IsConfigured()) {
                 this.logger.LogInformation("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file.");
                 await turnContext.SendActivityAsync(MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file.", inputHint: InputHints.IgnoringInput), cancellationToken);
                 return;
             }
-            var luisResult = await this.luisServiceProvider.RecognizeAsync<RecognizerResult>(turnContext, cancellationToken);
-            this.logger.LogInformation("Identified intent [" + luisResult.GetTopScoringIntent().intent + "] with score [" + luisResult.GetTopScoringIntent().score + "]");
 
-            switch (luisResult.GetTopScoringIntent().intent)
-            {
+            var luisResult = await this.luisServiceProvider.RecognizeAsync<RecognizerResult>(turnContext, cancellationToken);
+            var topIntent = luisResult.GetTopScoringIntent();
+            this.logger.LogInformation("LUIS identified intent [" + topIntent.intent + "] with score [" + topIntent.score + "]");
+
+            switch (topIntent.intent) {
                 case Constants.AskAnExpert:
                     this.logger.LogInformation("Sending user ask an expert card");
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(AskAnExpertCard.GetCard())).ConfigureAwait(false);
@@ -1460,30 +1460,23 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             try
             {
                 var queryResult = await this.qnaServiceProvider.GenerateAnswerAsync(question: text, isTestKnowledgeBase: false).ConfigureAwait(false);
+                var answerData = queryResult.Answers.First();
+                this.logger.LogInformation("QNA identified answer [" + answerData.Id + "] with score [" + answerData.Score + "]");
 
-                if (queryResult.Answers.First().Id != -1)
-                {
-                    var answerData = queryResult.Answers.First();
+                if (answerData.Id != -1) {
                     AnswerModel answerModel = new AnswerModel();
-
-                    if (Validators.IsValidJSON(answerData.Answer))
-                    {
+                    if (Validators.IsValidJSON(answerData.Answer)) {
                         answerModel = JsonConvert.DeserializeObject<AnswerModel>(answerData.Answer);
                     }
 
-                    if (!string.IsNullOrEmpty(answerModel?.Title) || !string.IsNullOrEmpty(answerModel?.Subtitle) || !string.IsNullOrEmpty(answerModel?.ImageUrl) || !string.IsNullOrEmpty(answerModel?.RedirectionUrl))
-                    {
+                    if (!string.IsNullOrEmpty(answerModel?.Title) || !string.IsNullOrEmpty(answerModel?.Subtitle) || !string.IsNullOrEmpty(answerModel?.ImageUrl) || !string.IsNullOrEmpty(answerModel?.RedirectionUrl)) {
                         await turnContext.SendActivityAsync(MessageFactory.Attachment(MessagingExtensionQnaCard.GetEndUserRichCard(text, answerData))).ConfigureAwait(false);
-                    }
-                    else
-                    {
+                    } else {
                         // Replaced response card for a text
                         // await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetCard(answerData.Questions.FirstOrDefault(), answerData.Answer, text))).ConfigureAwait(false);
                         await turnContext.SendActivityAsync(MessageFactory.Text(answerData.Answer, answerData.Answer)).ConfigureAwait(false);
                     }
-                }
-                else
-                {
+                } else {
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(UnrecognizedInputCard.GetCard(text))).ConfigureAwait(false);
                 }
             }
