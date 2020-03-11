@@ -89,6 +89,40 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
             };
         }
 
+        public static Attachment GetAnswerCard(string question, string answer, string userQuestion)
+        {
+            AdaptiveCard responseCard = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
+            {
+                Body = new List<AdaptiveElement>
+                {
+                    new AdaptiveTextBlock
+                    {
+                        Weight = AdaptiveTextWeight.Bolder,
+                        Text = Strings.ResponseHeaderText,
+                        Wrap = true,
+                    },/*
+                    new AdaptiveTextBlock
+                    {
+                        Text = question,
+                        Wrap = true,
+                    },*/
+                    new AdaptiveTextBlock
+                    {
+                        Text = answer,
+                        Wrap = true,
+                    },
+                },
+                Actions = new List<AdaptiveAction> {
+                },
+            };
+
+            return new Attachment
+            {
+                ContentType = AdaptiveCard.ContentType,
+                Content = responseCard,
+            };
+        }
+
         // <summary>
         /// Construct the response card for "Was this information helpful?" - when a response is returned to the user, ask if it was helpful.
         /// </summary>
@@ -156,12 +190,6 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
             {
                 Body = new List<AdaptiveElement>
                 {
-                    new AdaptiveTextBlock
-                    {
-                        Weight = AdaptiveTextWeight.Bolder,
-                        Text = Strings.ResponseHeaderText,
-                        Wrap = true,
-                    },
                     new AdaptiveTextBlock
                     {
                         // TODO should be a localized text: String.XXXXXX

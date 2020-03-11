@@ -780,7 +780,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
 
             var luisResult = await this.luisServiceProvider.RecognizeAsync<RecognizerResult>(turnContext, cancellationToken);
             var topIntent = luisResult.GetTopScoringIntent();
-            this.logger.LogInformation("LUIS identified intent [" + topIntent.intent + "] with score [" + topIntent.score + "]");
+            this.logger.LogInformation("LUIS identified intent [" + topIntent.intent + "] with score [" + topIntent.score + "] for the following input [" + text + "]");
 
             switch (topIntent.intent) {
                 case Constants.AskAnExpert:
@@ -791,6 +791,9 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                 case Constants.ShareFeedback:
                     this.logger.LogInformation("Sending user feedback card");
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(ShareFeedbackCard.GetCard())).ConfigureAwait(false);
+                    // TODO should be a localized text: String.XXXXXX
+                    string responseText = "Genial, dime si puedo ayudarte en algo más";
+                    await turnContext.SendActivityAsync(MessageFactory.Text(responseText, responseText)).ConfigureAwait(false);
                     break;
 
                 case Constants.TakeATour:
@@ -803,8 +806,8 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     // TODO verify it comes from the question "Was it helpful?"
                     this.logger.LogInformation("Yes option");
                     // TODO should be a localized text: String.XXXXXX
-                    string responseText = "Genial, dime si puedo ayudarte en algo más";
-                    await turnContext.SendActivityAsync(MessageFactory.Text(responseText, responseText)).ConfigureAwait(false);
+                    string yesResponseText = "Genial, dime si puedo ayudarte en algo más";
+                    await turnContext.SendActivityAsync(MessageFactory.Text(yesResponseText, yesResponseText)).ConfigureAwait(false);
                     break;
 
                 case Constants.NoCommand:
@@ -836,32 +839,6 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     await this.GetQuestionAnswerReplyAsync(turnContext, text).ConfigureAwait(false);
                     break;
             }
-
-            /*
-            switch (text)
-            {
-                case Constants.AskAnExpert:
-                    this.logger.LogInformation("Sending user ask an expert card");
-                    await turnContext.SendActivityAsync(MessageFactory.Attachment(AskAnExpertCard.GetCard())).ConfigureAwait(false);
-                    break;
-
-                case Constants.ShareFeedback:
-                    this.logger.LogInformation("Sending user feedback card");
-                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ShareFeedbackCard.GetCard())).ConfigureAwait(false);
-                    break;
-
-                case Constants.TakeATour:
-                    this.logger.LogInformation("Sending user tour card");
-                    var userTourCards = TourCarousel.GetUserTourCards(this.appBaseUri);
-                    await turnContext.SendActivityAsync(MessageFactory.Carousel(userTourCards)).ConfigureAwait(false);
-                    break;
-
-                default:
-                    this.logger.LogInformation("Sending input to QnAMaker");
-                    await this.GetQuestionAnswerReplyAsync(turnContext, text).ConfigureAwait(false);
-                    break;
-            }
-            */
         }
 
         /// <summary>
@@ -1473,7 +1450,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             {
                 var queryResult = await this.qnaServiceProvider.GenerateAnswerAsync(question: text, isTestKnowledgeBase: false).ConfigureAwait(false);
                 var answerData = queryResult.Answers.First();
-                this.logger.LogInformation("QNA identified answer [" + answerData.Id + "] with score [" + answerData.Score + "]");
+                this.logger.LogInformation("QNA identified answer [" + answerData.Id + "] with score [" + answerData.Score + "] for text [" + text + "]");
 
                 if (answerData.Id != -1) {
                     AnswerModel answerModel = new AnswerModel();
@@ -1483,12 +1460,15 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
 
                     if (!string.IsNullOrEmpty(answerModel?.Title) || !string.IsNullOrEmpty(answerModel?.Subtitle) || !string.IsNullOrEmpty(answerModel?.ImageUrl) || !string.IsNullOrEmpty(answerModel?.RedirectionUrl)) {
                         await turnContext.SendActivityAsync(MessageFactory.Attachment(MessagingExtensionQnaCard.GetEndUserRichCard(text, answerData))).ConfigureAwait(false);
+                    } else if ((answerData.Context != null) && (answerData.Context.Prompts != null) && (answerData.Context.Prompts.Count > 0)) {
+                        this.logger.LogInformation("QNA answer has prompts [" + answerData.Context.Prompts.Count + "]");
+                        // Replaced response card for a text
+                        await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetAnswerCard(answerData.Questions.FirstOrDefault(), answerData.Answer, text))).ConfigureAwait(false);
                     } else {
+                        this.logger.LogInformation("QNA answer has no prompts");
                         // Replaced response card for a text
                         // await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetCard(answerData.Questions.FirstOrDefault(), answerData.Answer, text))).ConfigureAwait(false);
                         await turnContext.SendActivityAsync(MessageFactory.Text(answerData.Answer, answerData.Answer)).ConfigureAwait(false);
-                        // TODO check if it is final
-                        //if (answerData.)
                         // Was the answer helpful?
                         await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetWasItHelpfulCard())).ConfigureAwait(false);
 
