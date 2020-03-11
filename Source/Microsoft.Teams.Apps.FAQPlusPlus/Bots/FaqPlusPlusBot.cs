@@ -816,12 +816,24 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNeedMoreHelpCard(userQuestion))).ConfigureAwait(false);
                     break;
 
+                case Constants.SaluteCommand:
+                    this.logger.LogInformation("Salute option");
+                    // TODO should be a localized text: String.XXXXXX
+                    string saluteResponseText = "Hola!";
+                    await turnContext.SendActivityAsync(MessageFactory.Text(saluteResponseText, saluteResponseText)).ConfigureAwait(false);
+                    break;
+
+                case Constants.GoodbyeCommand:
+                    this.logger.LogInformation("Salute option");
+                    // TODO should be a localized text: String.XXXXXX
+                    string goodbyeResponseText = "Hola!";
+                    await turnContext.SendActivityAsync(MessageFactory.Text(goodbyeResponseText, goodbyeResponseText)).ConfigureAwait(false);
+                    break;
+
                 default:
                     // Send to QNA
                     this.logger.LogInformation("Sending input to QnAMaker");
                     await this.GetQuestionAnswerReplyAsync(turnContext, text).ConfigureAwait(false);
-                    // Was the answer helpful?
-                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetWasItHelpfulCard())).ConfigureAwait(false);
                     break;
             }
 
@@ -1475,6 +1487,11 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                         // Replaced response card for a text
                         // await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetCard(answerData.Questions.FirstOrDefault(), answerData.Answer, text))).ConfigureAwait(false);
                         await turnContext.SendActivityAsync(MessageFactory.Text(answerData.Answer, answerData.Answer)).ConfigureAwait(false);
+                        // TODO check if it is final
+                        //if (answerData.)
+                        // Was the answer helpful?
+                        await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetWasItHelpfulCard())).ConfigureAwait(false);
+
                     }
                 } else {
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(UnrecognizedInputCard.GetCard(text))).ConfigureAwait(false);

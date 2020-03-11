@@ -30,6 +30,16 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Common
         public const string YesCommand = "yes";
 
         /// <summary>
+        /// Salute command.
+        /// </summary>
+        public const string SaluteCommand = "saludo";
+
+        /// <summary>
+        /// Goodbye command.
+        /// </summary>
+        public const string GoodbyeCommand = "despedida";
+
+        /// <summary>
         /// Regular expression pattern for valid redirection url.
         /// It checks whether the url is valid or not, while adding/editing the qna pair.
         /// </summary>
