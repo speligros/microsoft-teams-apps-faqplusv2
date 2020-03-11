@@ -77,6 +77,13 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus
                 knowledgeBaseSettings.StorageConnectionString = this.Configuration["StorageConnectionString"];
             });
 
+            services.Configure<LuisSettings>(luisSettings =>
+            {
+                luisSettings.AppId = this.Configuration["Luis:LuisAppId"];
+                luisSettings.APIKey = this.Configuration["Luis:LuisAPIKey"];
+                luisSettings.APIHostName = this.Configuration["Luis:LuisAPIHostName"];
+            });
+
             services.Configure<QnAMakerSettings>(qnAMakerSettings =>
             {
                 qnAMakerSettings.ScoreThreshold = this.Configuration["ScoreThreshold"];
@@ -108,6 +115,11 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus
                 new QnAMakerRuntimeClient(new EndpointKeyServiceClientCredentials(endpointKey)) { RuntimeEndpoint = this.Configuration["QnAMakerHostUrl"] }));
             services.AddSingleton<IActivityStorageProvider>((provider) => new ActivityStorageProvider(provider.GetRequiredService<IOptionsMonitor<KnowledgeBaseSettings>>()));
             services.AddSingleton<IKnowledgeBaseSearchService>((provider) => new KnowledgeBaseSearchService(this.Configuration["SearchServiceName"], this.Configuration["SearchServiceQueryApiKey"], this.Configuration["SearchServiceAdminApiKey"], this.Configuration["StorageConnectionString"]));
+
+            // Luis service
+            services.AddSingleton<ILuisServiceProvider>((provider) => new LuisServiceProvider(
+                provider.GetRequiredService<Common.Providers.IConfigurationDataProvider>(),
+                provider.GetRequiredService <IOptionsMonitor<LuisSettings>>()));
 
             services.AddSingleton<ISearchService, SearchService>();
             services.AddSingleton<IMemoryCache, MemoryCache>();

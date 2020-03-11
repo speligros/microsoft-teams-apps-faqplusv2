@@ -90,6 +90,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
         private readonly IKnowledgeBaseSearchService knowledgeBaseSearchService;
         private readonly ILogger<FaqPlusPlusBot> logger;
         private IQnaServiceProvider qnaServiceProvider;
+        private ILuisServiceProvider luisServiceProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FaqPlusPlusBot"/> class.
@@ -1400,6 +1401,10 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             ITurnContext<IMessageActivity> turnContext,
             string text)
         {
+            // TODO test luisRecognizer
+            this.logger.LogInformation("Luis config data AppId: " + luisServiceProvider.GetAppId(), SeverityLevel.Information);
+            this.logger.LogInformation("Luis config data APIKey: " + luisServiceProvider.GetAPIKey(), SeverityLevel.Information);
+            this.logger.LogInformation("Luis config data APIHostName: " + luisServiceProvider.GetAPIHostName(), SeverityLevel.Information);
             try
             {
                 var queryResult = await this.qnaServiceProvider.GenerateAnswerAsync(question: text, isTestKnowledgeBase: false).ConfigureAwait(false);
@@ -1420,7 +1425,11 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     }
                     else
                     {
-                        await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetCard(answerData.Questions.FirstOrDefault(), answerData.Answer, text))).ConfigureAwait(false);
+                        // Replaced response card for a text
+                        // await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetCard(answerData.Questions.FirstOrDefault(), answerData.Answer, text))).ConfigureAwait(false);
+                        await turnContext.SendActivityAsync(MessageFactory.Text(answerData.Answer, answerData.Answer)).ConfigureAwait(false);
+                        // Was the answer helpful?
+                        await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetWasItHelpfulCard())).ConfigureAwait(false);
                     }
                 }
                 else

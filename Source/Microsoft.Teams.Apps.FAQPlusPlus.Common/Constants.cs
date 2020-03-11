@@ -25,6 +25,11 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Common
         public const string NoCommand = "no";
 
         /// <summary>
+        /// Yes command.
+        /// </summary>
+        public const string YesCommand = "yes";
+
+        /// <summary>
         /// Regular expression pattern for valid redirection url.
         /// It checks whether the url is valid or not, while adding/editing the qna pair.
         /// </summary>
