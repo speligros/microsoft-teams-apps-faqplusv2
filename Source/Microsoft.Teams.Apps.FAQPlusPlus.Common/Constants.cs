@@ -47,6 +47,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Common
 
         public const string ShowCableRequestDetailsCommand = "mostrar_detalles_de_petición_de_cable";
 
+        public const string CancelCommand = "cancelar";
 
         /// <summary>
         /// Regular expression pattern for valid redirection url.
