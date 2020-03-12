@@ -405,7 +405,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                     new AdaptiveTextBlock
                     {
                         // TODO should be a localized text: String.XXXXXX
-                        Text = "Formulario usuario nuevo",
+                        Text = "Nombre: ",
                         Wrap = true,
                     },
                     new AdaptiveTextInput
@@ -483,6 +483,108 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                                 // TODO should be a localized text: String.XXXXXX
                                 DisplayText = "Proceder a alta usuario",
                                 Text = Constants.ShowUserDetailsCommand,
+                            },
+                        },
+                    },
+                    new AdaptiveSubmitAction
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Title = "Cancelar",
+                        Data = new ResponseCardPayload
+                        {
+                            MsTeams = new CardAction
+                            {
+                                Type = ActionTypes.MessageBack,
+                                // TODO should be a localized text: String.XXXXXX
+                                DisplayText = "Cancelar",
+                                Text = Constants.CancelCommand,
+                            },
+                        },
+                    },
+                },
+            };
+
+            return new Attachment
+            {
+                ContentType = AdaptiveCard.ContentType,
+                Content = responseCard,
+            };
+        }
+
+        public static Attachment GetNewCableRequestFormCard()
+        {
+            AdaptiveCard responseCard = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
+            {
+                Body = new List<AdaptiveElement>
+                {
+                    new AdaptiveTextBlock
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Text = "Delegación: ",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskCableRequestDetailsCardPayload.Delegation),
+                        Placeholder = "delegación",
+                        IsMultiline = false,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = "",
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = "Oficina: ",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskCableRequestDetailsCardPayload.Office),
+                        Placeholder = "oficina",
+                        IsMultiline = true,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = "",
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = "Planta: ",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskCableRequestDetailsCardPayload.Floor),
+                        Placeholder = "planta",
+                        IsMultiline = true,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = "",
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = "Punto de red: ",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskCableRequestDetailsCardPayload.NetPoint),
+                        Placeholder = "punto de red",
+                        IsMultiline = true,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = "",
+                    },
+                },
+                Actions = new List<AdaptiveAction>
+                {
+                    new AdaptiveSubmitAction
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Title = "Nueva petición de cable",
+                        Data = new ResponseCardPayload
+                        {
+                            MsTeams = new CardAction
+                            {
+                                Type = ActionTypes.MessageBack,
+                                // TODO should be a localized text: String.XXXXXX
+                                DisplayText = "Proceder a petición de cable",
+                                Text = Constants.ShowCableRequestDetailsCommand,
                             },
                         },
                     },

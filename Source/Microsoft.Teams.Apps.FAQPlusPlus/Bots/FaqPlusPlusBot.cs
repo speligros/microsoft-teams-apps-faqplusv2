@@ -786,7 +786,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             switch (topIntent.intent) {
                 case Constants.NewUserCommand:
                     this.logger.LogInformation("Proceeding to create a new user");
-                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewUserCard())).ConfigureAwait(false);
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewUserFormCard())).ConfigureAwait(false);
                     break;
 
                 case Constants.ShowUserDetailsCommand:
@@ -796,7 +796,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
 
                 case Constants.NewCableRequestCommand:
                     this.logger.LogInformation("Proceeding to create a new cable request");
-                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewCableRequestCard())).ConfigureAwait(false);
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewCableRequestFormCard())).ConfigureAwait(false);
                     break;
 
                 case Constants.ShowCableRequestDetailsCommand:
@@ -857,7 +857,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                 case Constants.CancelCommand:
                     this.logger.LogInformation("Cancel option");
                     // TODO should be a localized text: String.XXXXXX
-                    string CancelResponseText = "Cancelada";
+                    string CancelResponseText = "Petición cancelada";
                     await turnContext.SendActivityAsync(MessageFactory.Text(CancelResponseText, CancelResponseText)).ConfigureAwait(false);
                     break;
 
