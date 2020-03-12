@@ -24,44 +24,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Helpers
     /// </summary>
     public static class AdaptiveCardHelper
     {
-        public static async Task<TeamsChannelAccount> AskUserDetailsSubmitText(
-            IMessageActivity message,
-            ITurnContext<IMessageActivity> turnContext,
-            CancellationToken cancellationToken,
-            ILogger<FaqPlusPlusBot> logger)
-        {
-            logger.LogInformation("AskUserDetailsSubmitText - start");
-            AskUserDetailsCardPayload askUserDetailsSubmitTextPayload = new AskUserDetailsCardPayload();
-            if ((message.Value != null) && ((JObject)message.Value).HasValues)
-            {
-                logger.LogInformation("AskUserDetailsSubmitText - message has data");
-                askUserDetailsSubmitTextPayload = ((JObject)message.Value).ToObject<AskUserDetailsCardPayload>();
-            }
-            logger.LogInformation("AskUserDetailsSubmitText - process");
-
-            // Validate required fields.
-            if (string.IsNullOrWhiteSpace(askUserDetailsSubmitTextPayload?.Name))
-            {
-                var updateCardActivity = new Activity(ActivityTypes.Message)
-                {
-                    Id = turnContext.Activity.ReplyToId,
-                    Conversation = turnContext.Activity.Conversation,
-                    Attachments = new List<Attachment> { ResponseCard.GetNewUserCard(askUserDetailsSubmitTextPayload) },
-                };
-                logger.LogInformation("AskUserDetailsSubmitText - call UpdateActivityAsync");
-                await turnContext.UpdateActivityAsync(updateCardActivity, cancellationToken).ConfigureAwait(false);
-                logger.LogInformation("AskUserDetailsSubmitText - finish without data");
-                return null;
-            }
-
-            logger.LogInformation("AskUserDetailsSubmitText - call GetUserDetailsInPersonalChatAsync");
-            var userDetails = await GetUserDetailsInPersonalChatAsync(turnContext, cancellationToken).ConfigureAwait(false);
-            logger.LogInformation("AskUserDetailsSubmitText - finish with data");
-            return userDetails;
-        }
-
-
-        /// <summary>
+          /// <summary>
         /// Helps to get the expert submit card.
         /// </summary>
         /// <param name="message">A message in a conversation.</param>

@@ -292,7 +292,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                     new AdaptiveTextBlock
                     {
                         // TODO should be a localized text: String.XXXXXX
-                        Text = "Usuario procesado, se ha creado el usuario: User" + (new System.Random()).Next(111,999),
+                        Text = "Usuario procesado, se ha creado la petición: Request-" + (new System.Random()).Next(111, 999),
                         Wrap = true,
                     },
                 },
@@ -355,8 +355,8 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                 {
                     new AdaptiveTextBlock
                     {
-                        // TODO should be a localized text: String.XXXXXX
-                        Text = "Detalles de petición de cable",
+                       // TODO should be a localized text: String.XXXXXX
+                        Text = "Petición procesada, se ha creado la petición: Request-" + (new System.Random()).Next(111, 999),
                         Wrap = true,
                     },
                 },
@@ -396,7 +396,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
             return actionsList;
         }
 
-        public static Attachment GetNewUserCard(AskUserDetailsCardPayload cardPayload)
+        public static Attachment GetNewUserFormCard()
         {
             AdaptiveCard responseCard = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
             {
@@ -414,7 +414,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                         Placeholder = "nombre",
                         IsMultiline = false,
                         Spacing = AdaptiveSpacing.Small,
-                        Value = cardPayload?.Name,
+                        Value = "",
                     },
                     new AdaptiveTextBlock
                     {
@@ -427,7 +427,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                         Placeholder = "apellido",
                         IsMultiline = true,
                         Spacing = AdaptiveSpacing.Small,
-                        Value = cardPayload?.Surname,
+                        Value = "",
                     },
                     new AdaptiveTextBlock
                     {
@@ -440,7 +440,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                         Placeholder = "departamento",
                         IsMultiline = true,
                         Spacing = AdaptiveSpacing.Small,
-                        Value = cardPayload?.Department,
+                        Value = "",
                     },
                     new AdaptiveTextBlock
                     {
@@ -453,7 +453,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                         Placeholder = "responsable",
                         IsMultiline = true,
                         Spacing = AdaptiveSpacing.Small,
-                        Value = cardPayload?.Responsible,
+                        Value = "",
                     },
                     new AdaptiveTextBlock
                     {
@@ -466,7 +466,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                         Placeholder = "fecha alta",
                         IsMultiline = true,
                         Spacing = AdaptiveSpacing.Small,
-                        Value = cardPayload?.CreateDate,
+                        Value = "",
                     },
                 },
                 Actions = new List<AdaptiveAction>
