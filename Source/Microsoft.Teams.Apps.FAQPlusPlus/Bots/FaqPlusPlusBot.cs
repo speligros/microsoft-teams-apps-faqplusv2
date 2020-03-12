@@ -764,12 +764,6 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken)
         {
-            if (!string.IsNullOrEmpty(message.ReplyToId) && (message.Value != null) && ((JObject)message.Value).HasValues) {
-                this.logger.LogInformation("Card submit in 1:1 chat");
-                await this.OnAdaptiveCardSubmitInPersonalChatAsync(message, turnContext, cancellationToken).ConfigureAwait(false);
-                return;
-            }
-
             string text = message.Text?.ToLower()?.Trim() ?? string.Empty;
 
             if (!this.luisServiceProvider.IsConfigured()) {
@@ -782,6 +776,14 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             var topIntent = luisResult.GetTopScoringIntent();
             this.logger.LogInformation("LUIS identified intent [" + topIntent.intent + "] with score [" + topIntent.score + "] for the following input [" + text + "]");
 
+            //if (!string.IsNullOrEmpty(message.ReplyToId) && (message.Value != null) && ((JObject)message.Value).HasValues)
+            if ("NONE".Equals(topIntent.intent) &&!string.IsNullOrEmpty(message.ReplyToId) && (message.Value != null) && ((JObject)message.Value).HasValues)
+            {
+                this.logger.LogInformation("Card submit in 1:1 chat");
+                await this.OnAdaptiveCardSubmitInPersonalChatAsync(message, turnContext, cancellationToken).ConfigureAwait(false);
+                return;
+            }
+
             switch (topIntent.intent) {
                 case Constants.NewUserCommand:
                     this.logger.LogInformation("Proceeding to create a new user");
@@ -793,8 +795,8 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                         this.logger.LogInformation("User details returned");
                         //smeTeamCard = new SmeTicketCard(newTicket).ToAttachment(message?.LocalTimestamp);
                         //userCard = new UserNotificationCard(newTicket).ToAttachment(Strings.NotificationCardContent, message?.LocalTimestamp);
+                        await turnContext.SendActivityAsync(MessageFactory.Text("DUMMY", "DUMMY")).ConfigureAwait(false);
                     }
-                    //                await turnContext.SendActivityAsync(MessageFactory.Attachment(userCard), cancellationToken).ConfigureAwait(false);
                     break;
 
                 case Constants.ShowUserDetailsCommand:

@@ -49,7 +49,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Helpers
                     Attachments = new List<Attachment> { ResponseCard.GetNewUserCard(askUserDetailsSubmitTextPayload) },
                 };
                 logger.LogInformation("AskUserDetailsSubmitText - call UpdateActivityAsync");
-                //await turnContext.UpdateActivityAsync(updateCardActivity, cancellationToken).ConfigureAwait(false);
+                await turnContext.UpdateActivityAsync(updateCardActivity, cancellationToken).ConfigureAwait(false);
                 logger.LogInformation("AskUserDetailsSubmitText - finish without data");
                 return null;
             }
