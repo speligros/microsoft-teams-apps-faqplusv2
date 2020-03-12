@@ -869,18 +869,25 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                 default:
                     if (!string.IsNullOrEmpty(message.ReplyToId) && (message.Value != null) && ((JObject)message.Value).HasValues)
                     {
-                        bool hasUserQuestion = (((JObject)message.Value).Property("UserQuestion") != null);
-                        bool hasKnowledgeBaseAnswer = (((JObject)message.Value).Property("KnowledgeBaseAnswer") != null);
-                        this.logger.LogInformation("Current message containsUserQuestion [" + ((JObject)message.Value).ContainsKey("UserQuestion") 
-                            + "] - Flag hasUserQuestion ["
-                            + hasUserQuestion + "] - Flag hasKnowledgeBaseAnswer ["
-                            + hasKnowledgeBaseAnswer + "]");
-                        if (hasUserQuestion || hasKnowledgeBaseAnswer)
-                        {
+                        if (message.Attachments != null) {
+                            string messageType = message.Attachments.GetType().Name;
+                            IEnumerable<TeamsAdaptiveSubmitActionData> itemsCard = message.Attachments.OfType<TeamsAdaptiveSubmitActionData>();
+                            IEnumerable<AskUserDetailsCardPayload> itemsUserDetails = message.Attachments.OfType<AskUserDetailsCardPayload>();
+                            IEnumerable<AskCableRequestDetailsCardPayload> itemsCable = message.Attachments.OfType<AskCableRequestDetailsCardPayload>();
+                            IEnumerable<AskComputerRequestDetailsCardPayload> itemsComputer = message.Attachments.OfType<AskComputerRequestDetailsCardPayload>();
+                            this.logger.LogInformation("MESSAGES - messageType [" + messageType
+                                + "] - itemsCard [" + itemsCard.Count()
+                                + "] - itemsUserDetails [" + itemsUserDetails.Count()
+                                + "] - itemsCable [" + itemsCable.Count()
+                                + "] - itemsComputer ["+ itemsComputer.Count() + "]");
+                        }
+                        this.logger.LogInformation("Current message text [" + text + "]");
+                        //if (hasUserQuestion || hasKnowledgeBaseAnswer)
+                        //{
                             this.logger.LogInformation("Card submit in 1:1 chat");
                             await this.OnAdaptiveCardSubmitInPersonalChatAsync(message, turnContext, cancellationToken).ConfigureAwait(false);
                             return;
-                        }
+                        //}
                     }
                     // Send to QNA
                     this.logger.LogInformation("Sending input to QnAMaker");
