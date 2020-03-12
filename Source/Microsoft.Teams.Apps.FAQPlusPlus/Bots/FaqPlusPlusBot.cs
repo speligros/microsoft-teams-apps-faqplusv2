@@ -812,7 +812,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     this.logger.LogInformation("Sending user feedback card");
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(ShareFeedbackCard.GetCard())).ConfigureAwait(false);
                     // TODO should be a localized text: String.XXXXXX
-                    string responseText = "Genial, dime si puedo ayudarte en algo más";
+                    string responseText = "Genial, dime si puedo ayudarte en algo mï¿½s";
                     await turnContext.SendActivityAsync(MessageFactory.Text(responseText, responseText)).ConfigureAwait(false);
                     break;
 
@@ -826,7 +826,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     // TODO verify it comes from the question "Was it helpful?"
                     this.logger.LogInformation("Yes option");
                     // TODO should be a localized text: String.XXXXXX
-                    string yesResponseText = "Genial, dime si puedo ayudarte en algo más";
+                    string yesResponseText = "Genial, dime si puedo ayudarte en algo mï¿½s";
                     await turnContext.SendActivityAsync(MessageFactory.Text(yesResponseText, yesResponseText)).ConfigureAwait(false);
                     break;
 
@@ -849,8 +849,15 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                 case Constants.GoodbyeCommand:
                     this.logger.LogInformation("Salute option");
                     // TODO should be a localized text: String.XXXXXX
-                    string goodbyeResponseText = "Hola!";
+                    string goodbyeResponseText = "Adios!";
                     await turnContext.SendActivityAsync(MessageFactory.Text(goodbyeResponseText, goodbyeResponseText)).ConfigureAwait(false);
+                    break;
+                
+                case Constants.CancelCommand:
+                    this.logger.LogInformation("Cancel option");
+                    // TODO should be a localized text: String.XXXXXX
+                    string CancelResponseText = "Cancelada";
+                    await turnContext.SendActivityAsync(MessageFactory.Text(CancelResponseText, CancelResponseText)).ConfigureAwait(false);
                     break;
 
                 default:

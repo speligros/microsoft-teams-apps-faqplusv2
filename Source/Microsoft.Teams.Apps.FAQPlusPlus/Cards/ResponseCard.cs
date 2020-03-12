@@ -237,7 +237,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                     new AdaptiveTextBlock
                     {
                         // TODO should be a localized text: String.XXXXXX
-                        Text = "Nuevo Usuario",
+                        Text = "Formulario Usuario nuevo",
                         Wrap = true,
                     },
                 },
@@ -246,7 +246,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                     new AdaptiveSubmitAction
                     {
                         // TODO should be a localized text: String.XXXXXX
-                        Title = "Dar de alta usuario",
+                        Title = "Alta de Usuario",
                         Data = new ResponseCardPayload
                         {
                             MsTeams = new CardAction
@@ -255,6 +255,21 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                                 // TODO should be a localized text: String.XXXXXX
                                 DisplayText = "Proceder a alta usuario",
                                 Text = Constants.ShowUserDetailsCommand,
+                            },
+                        },
+                    },
+                    new AdaptiveSubmitAction
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Title = "Cancelar",
+                        Data = new ResponseCardPayload
+                        {
+                            MsTeams = new CardAction
+                            {
+                                Type = ActionTypes.MessageBack,
+                                // TODO should be a localized text: String.XXXXXX
+                                DisplayText = "Cancelar",
+                                Text = Constants.CancelCommand,
                             },
                         },
                     },
