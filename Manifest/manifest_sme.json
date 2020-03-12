@@ -5,50 +5,60 @@
   "id": "165dc594-e36a-488f-a8ba-20fcebacad86",
   "packageName": "com.microsoft.teams.faqplus.experts",
   "developer": {
-    "name": "<<companyName>>",
-    "websiteUrl": "<<websiteUrl>>",
-    "privacyUrl": "<<privacyUrl>>",
-    "termsOfUseUrl": "<<termsOfUseUrl>>"
+    "name": "everis",
+    "websiteUrl": "http://www.everis.com",
+    "privacyUrl": "https://knowler.everis.com",
+    "termsOfUseUrl": "https://e17r5k-datap1.s3-eu-west-1.amazonaws.com/evercorp/s3fs-public/quality_policy.pdf?clUVJknIn_B2.I4rIGdFR_w_AmbpN4iP"
   },
   "icons": {
-    "color": "color.png",
-    "outline": "outline.png"
+    "color": "bot.png",
+    "outline": "mini.png"
   },
   "name": {
-    "short": "FAQ Plus [V2] (Experts Team)"
+    "short": "ZBot ServiceDesk"
   },
   "description": {
-    "short": "A friendly FAQ bot that answers questions and connects you to experts.",
-    "full": "A friendly question and answer bot that answers commonly asked questions. If it can't answer, it will put you in touch with an expert as soon as they are available."
+    "short": "Asistente Virtual PoC para Zurich.",
+    "full": "Asistente Virtual PoC para Zurich."
   },
   "accentColor": "#64A2CC",
   "bots": [
     {
-      "botId": "<<botId>>",
+      "botId": "faa9d0ef-e95c-4868-bbe2-c57ab6500ca7",
       "scopes": [
         "personal",
         "team"
       ],
       "commandLists": [
         {
-          "scopes": [
+            "scopes": [
             "personal"
           ],
           "commands": [
             {
-              "title": "Take a tour",
-              "description": "Tour of key features"
+              "title": "Alta de nuevo Usuario",
+              "description": "Nueo usuario"
             },
             {
-              "title": "Ask an expert",
-              "description": "Connect with an expert"
+              "title": "Solicitud de conexion de Red",
+              "description": "Connexion Wifi/Cable"
             },
             {
-              "title": "Share feedback",
+              "title": "Solicitud de Equipo",
+              "description": "Equipo nuevo" 
+            },
+            {
+              "title": "Contactar Agente de ServiceDesk",
+              "description": "Traspaso a ServiceDesk"
+            },
+            {
+              "title": "Comparte feedback",
               "description": "Send feedback"
             }
+
           ]
         }
+        
       ],
       "supportsFiles": false,
       "isNotificationOnly": false
@@ -57,8 +67,8 @@
   "staticTabs": [
     {
       "entityId": "help",
-      "name": "Help",
-      "contentUrl": "https://<<appDomain>>/help?theme={theme}",
+      "name": "Ayuda",
+      "contentUrl": "https://knowler.everis.com",
       "scopes": [
         "personal"
       ]
@@ -66,19 +76,19 @@
   ],
   "composeExtensions": [
     {
-      "botId": "<<botId>>",
+      "botId": "faa9d0ef-e95c-4868-bbe2-c57ab6500ca7",
       "canUpdateConfiguration": false,
       "commands": [
         {
           "id": "recents",
           "type": "query",
-          "title": "Recent",
-          "description": "Search recent requests",
+          "title": "Recientes",
+          "description": "Buscar peticiones/incidencias recientes",
           "parameters": [
             {
               "name": "searchText",
-              "title": "Search",
-              "description": "Search tickets"
+              "title": "Buscar",
+              "description": "Buscar tickets"
             }
           ],
           "context": [
@@ -89,13 +99,13 @@
         {
           "id": "openrequests",
           "type": "query",
-          "title": "Unassigned",
-          "description": "Search unassigned requests not yet assigned to an expert",
+          "title": "No asignadas",
+          "description": "Buscar peticiones no asignadsa todavia a ningun técnico",
           "parameters": [
             {
               "name": "searchText",
-              "title": "Search",
-              "description": "Search tickets"
+              "title": "Buscar",
+              "description": "Buscar tickets"
             }
           ],
           "context": [
@@ -111,8 +121,8 @@
           "parameters": [
             {
               "name": "searchText",
-              "title": "Search",
-              "description": "Search tickets"
+              "title": "Buscar",
+              "description": "Buscar tickets"
             }
           ],
           "context": [
@@ -123,13 +133,13 @@
         {
           "id": "kbquestions",
           "type": "query",
-          "title": "Knowledge base",
-          "description": "Search recent requests",
+          "title": "Base de conocimiento",
+          "description": "Buscar preguntas fercuentes",
           "parameters": [
             {
               "name": "searchText",
               "title": "Search",
-              "description": "Search KB QnA pairs"
+              "description": "Buscar en base de conocimiento"
             }
           ],
           "context": [
@@ -140,8 +150,8 @@
         {
           "id": "addquestion",
           "type": "action",
-          "title": "Add new question",
-          "description": "Add a new qna pair",
+          "title": "Añadir nueva pregunta",
+          "description": "Añadir nueva pregunta",
           "initialRun": true,
           "fetchTask": true,
           "context": [
@@ -151,8 +161,8 @@
           "parameters": [
             {
               "name": "addquestion",
-              "title": "Add a question",
-              "description": "Add a new qna pair"
+              "title": "Añadir pregunta",
+              "description": "Añadir pregunta"
             }
           ]
         }
@@ -164,6 +174,6 @@
     "messageTeamMembers"
   ],
   "validDomains": [
-    "<<appDomain>>"
+    "ezbotfaq2v1.azurewebsites.net"
   ]
 }

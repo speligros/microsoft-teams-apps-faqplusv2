@@ -5,26 +5,26 @@
   "id": "aba30cfc-05df-4002-b956-a70996b12a54",
   "packageName": "com.microsoft.teams.faqplus",
   "developer": {
-    "name": "<<companyName>>",
-    "websiteUrl": "<<websiteUrl>>",
-    "privacyUrl": "<<privacyUrl>>",
-    "termsOfUseUrl": "<<termsOfUseUrl>>"
+    "name": "everis",
+    "websiteUrl": "http://www.everis.com",
+    "privacyUrl": "https://knowler.everis.com",
+    "termsOfUseUrl": "https://e17r5k-datap1.s3-eu-west-1.amazonaws.com/evercorp/s3fs-public/quality_policy.pdf?clUVJknIn_B2.I4rIGdFR_w_AmbpN4iP"
   },
   "icons": {
-    "color": "color.png",
-    "outline": "outline.png"
+    "color": "bot.png",
+    "outline": "mini.png"
   },
   "name": {
-    "short": "FAQ Plus [V2]"
+    "short": "ZBot"
   },
   "description": {
-    "short": "A friendly FAQ bot that answers questions and connects you to experts.",
-    "full": "A friendly question and answer bot that answers commonly asked questions. If it can't answer, it will put you in touch with an expert as soon as they are available."
+    "short": "Asistente Virtual PoC para Zurich.",
+    "full": "Asistente Virtual PoC para Zurich."
   },
   "accentColor": "#64A2CC",
   "bots": [
     {
-      "botId": "<<botId>>",
+      "botId": "faa9d0ef-e95c-4868-bbe2-c57ab6500ca7",
       "scopes": [
         "personal",
         "team"
@@ -36,17 +36,26 @@
           ],
           "commands": [
             {
-              "title": "Take a tour",
-              "description": "Tour of key features"
+              "title": "Alta de nuevo Usuario",
+              "description": "Nueo usuario"
             },
             {
-              "title": "Ask an expert",
-              "description": "Connect with an expert"
+              "title": "Solicitud de conexion de Red",
+              "description": "Connexion Wifi/Cable"
             },
             {
-              "title": "Share feedback",
+              "title": "Solicitud de Equipo",
+              "description": "Equipo nuevo" 
+            },
+            {
+              "title": "Contactar Agente de ServiceDesk",
+              "description": "Traspaso a ServiceDesk"
+            },
+            {
+              "title": "Comparte feedback",
               "description": "Send feedback"
             }
+
           ]
         }
       ],
@@ -57,8 +66,8 @@
   "staticTabs": [
     {
       "entityId": "help",
-      "name": "Help",
-      "contentUrl": "https://<<appDomain>>/help?theme={theme}",
+      "name": "Ayuda",
+      "contentUrl": "https://knowler.everis.com",
       "scopes": [
         "personal"
       ]
@@ -69,6 +78,6 @@
     "messageTeamMembers"
   ],
   "validDomains": [
-    "<<appDomain>>"
+    "ezbotfaq2v1.azurewebsites.net"
   ]
 }
