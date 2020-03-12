@@ -794,6 +794,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                         //smeTeamCard = new SmeTicketCard(newTicket).ToAttachment(message?.LocalTimestamp);
                         //userCard = new UserNotificationCard(newTicket).ToAttachment(Strings.NotificationCardContent, message?.LocalTimestamp);
                     }
+                    //                await turnContext.SendActivityAsync(MessageFactory.Attachment(userCard), cancellationToken).ConfigureAwait(false);
                     break;
 
                 case Constants.ShowUserDetailsCommand:
