@@ -804,6 +804,16 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetCableRequestDetailsCard())).ConfigureAwait(false);
                     break;
 
+                case Constants.NewComputerRequestCommand:
+                    this.logger.LogInformation("Proceeding to create a new computer request");
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewComputerRequestFormCard())).ConfigureAwait(false);
+                    break;
+
+                case Constants.ShowComputerRequestDetailsCommand:
+                    this.logger.LogInformation("Showing computer request details");
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetComputerRequestDetailsCard())).ConfigureAwait(false);
+                    break;
+
                 case Constants.AskAnExpert:
                     this.logger.LogInformation("Sending user ask an expert card");
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(AskAnExpertCard.GetCard())).ConfigureAwait(false);
@@ -813,7 +823,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     this.logger.LogInformation("Sending user feedback card");
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(ShareFeedbackCard.GetCard())).ConfigureAwait(false);
                     // TODO should be a localized text: String.XXXXXX
-                    string responseText = "Genial, dime si puedo ayudarte en algo m�s";
+                    string responseText = "Genial, dime si puedo ayudarte en algo más";
                     await turnContext.SendActivityAsync(MessageFactory.Text(responseText, responseText)).ConfigureAwait(false);
                     break;
 

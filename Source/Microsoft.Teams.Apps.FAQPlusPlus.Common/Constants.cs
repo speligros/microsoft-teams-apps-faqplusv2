@@ -43,9 +43,13 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Common
 
         public const string ShowUserDetailsCommand = "mostrar_detalles_de_usuario";
 
-        public const string NewCableRequestCommand = "proceder_a_petición_cable";
+        public const string NewCableRequestCommand = "proceder_a_peticion_cable";
 
-        public const string ShowCableRequestDetailsCommand = "mostrar_detalles_de_petición_de_cable";
+        public const string ShowCableRequestDetailsCommand = "mostrar_detalles_de_peticion_de_cable";
+
+        public const string NewComputerRequestCommand = "proceder_a_peticion_equipo";
+
+        public const string ShowComputerRequestDetailsCommand = "mostrar_detalles_de_peticion_de_equipo";
 
         public const string CancelCommand = "cancelar";
 
@@ -88,12 +92,12 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Common
         /// <summary>
         /// TeamTour - text that triggers team tour action.
         /// </summary>
-        public const string TeamTour = "team tour";
+        public const string TeamTour = "team_tour";
 
         /// <summary>
         /// TakeAtour - text that triggers take a tour action for the user.
         /// </summary>
-        public const string TakeATour = "take a tour";
+        public const string TakeATour = "take_a_tour";
 
         /// <summary>
         /// AskAnExpert - text that renders the ask an expert card.
@@ -103,7 +107,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Common
         /// <summary>
         /// Feedback - text that renders share feedback card.
         /// </summary>
-        public const string ShareFeedback = "share feedback";
+        public const string ShareFeedback = "share_feedback";
 
         /// <summary>
         /// Table name where SME activity details from bot will be saved.

@@ -372,6 +372,30 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
             };
         }
 
+        public static Attachment GetComputerRequestDetailsCard()
+        {
+            AdaptiveCard responseCard = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
+            {
+                Body = new List<AdaptiveElement>
+                {
+                    new AdaptiveTextBlock
+                    {
+                       // TODO should be a localized text: String.XXXXXX
+                        Text = "Petición procesada, se ha creado la petición: Request-" + (new System.Random()).Next(111, 999),
+                        Wrap = true,
+                    },
+                },
+                Actions = new List<AdaptiveAction>
+                {
+                },
+            };
+
+            return new Attachment
+            {
+                ContentType = AdaptiveCard.ContentType,
+                Content = responseCard,
+            };
+        }
 
         private static List<AdaptiveAction> GenerateActions(IList<PromptDTO> prompts)
         {
@@ -425,7 +449,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                     {
                         Id = nameof(AskUserDetailsCardPayload.Surname),
                         Placeholder = "apellido",
-                        IsMultiline = true,
+                        IsMultiline = false,
                         Spacing = AdaptiveSpacing.Small,
                         Value = "",
                     },
@@ -438,7 +462,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                     {
                         Id = nameof(AskUserDetailsCardPayload.Department),
                         Placeholder = "departamento",
-                        IsMultiline = true,
+                        IsMultiline = false,
                         Spacing = AdaptiveSpacing.Small,
                         Value = "",
                     },
@@ -451,7 +475,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                     {
                         Id = nameof(AskUserDetailsCardPayload.Responsible),
                         Placeholder = "responsable",
-                        IsMultiline = true,
+                        IsMultiline = false,
                         Spacing = AdaptiveSpacing.Small,
                         Value = "",
                     },
@@ -464,7 +488,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                     {
                         Id = nameof(AskUserDetailsCardPayload.CreateDate),
                         Placeholder = "fecha alta",
-                        IsMultiline = true,
+                        IsMultiline = false,
                         Spacing = AdaptiveSpacing.Small,
                         Value = "",
                     },
@@ -540,7 +564,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                     {
                         Id = nameof(AskCableRequestDetailsCardPayload.Office),
                         Placeholder = "oficina",
-                        IsMultiline = true,
+                        IsMultiline = false,
                         Spacing = AdaptiveSpacing.Small,
                         Value = "",
                     },
@@ -553,7 +577,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                     {
                         Id = nameof(AskCableRequestDetailsCardPayload.Floor),
                         Placeholder = "planta",
-                        IsMultiline = true,
+                        IsMultiline = false,
                         Spacing = AdaptiveSpacing.Small,
                         Value = "",
                     },
@@ -566,7 +590,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                     {
                         Id = nameof(AskCableRequestDetailsCardPayload.NetPoint),
                         Placeholder = "punto de red",
-                        IsMultiline = true,
+                        IsMultiline = false,
                         Spacing = AdaptiveSpacing.Small,
                         Value = "",
                     },
@@ -585,6 +609,148 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                                 // TODO should be a localized text: String.XXXXXX
                                 DisplayText = "Proceder a petición de cable",
                                 Text = Constants.ShowCableRequestDetailsCommand,
+                            },
+                        },
+                    },
+                    new AdaptiveSubmitAction
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Title = "Cancelar",
+                        Data = new ResponseCardPayload
+                        {
+                            MsTeams = new CardAction
+                            {
+                                Type = ActionTypes.MessageBack,
+                                // TODO should be a localized text: String.XXXXXX
+                                DisplayText = "Cancelar",
+                                Text = Constants.CancelCommand,
+                            },
+                        },
+                    },
+                },
+            };
+
+            return new Attachment
+            {
+                ContentType = AdaptiveCard.ContentType,
+                Content = responseCard,
+            };
+        }
+        public static Attachment GetNewComputerRequestFormCard()
+        {
+            AdaptiveCard responseCard = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
+            {
+                Body = new List<AdaptiveElement>
+                {
+                    new AdaptiveTextBlock
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Text = "Usuario: ",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskComputerRequestDetailsCardPayload.User),
+                        Placeholder = "nombre de usuario",
+                        IsMultiline = false,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = "",
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = "Delegación: ",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskComputerRequestDetailsCardPayload.Delegation),
+                        Placeholder = "delegación",
+                        IsMultiline = false,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = "",
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = "Responsable: ",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskComputerRequestDetailsCardPayload.Responsible),
+                        Placeholder = "nombre de responsable",
+                        IsMultiline = false,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = "",
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = "Ram: ",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskComputerRequestDetailsCardPayload.Ram),
+                        Placeholder = "GB de memoria RAM",
+                        IsMultiline = false,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = "",
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = "Disco: ",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskComputerRequestDetailsCardPayload.Disk),
+                        Placeholder = "GB de disco duro",
+                        IsMultiline = false,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = "",
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = "Duración: ",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskComputerRequestDetailsCardPayload.DurationInMonths),
+                        Placeholder = "duración de la asignación en meses",
+                        IsMultiline = false,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = "",
+                    },
+                },
+                Actions = new List<AdaptiveAction>
+                {
+                    new AdaptiveSubmitAction
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Title = "Nueva petición de equipo portátil",
+                        Data = new ResponseCardPayload
+                        {
+                            MsTeams = new CardAction
+                            {
+                                Type = ActionTypes.MessageBack,
+                                // TODO should be a localized text: String.XXXXXX
+                                DisplayText = "Proceder a petición de equipo portátil",
+                                Text = Constants.ShowComputerRequestDetailsCommand,
+                            },
+                        },
+                    },
+                    new AdaptiveSubmitAction
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Title = "Nueva petición de equipo sobremesa",
+                        Data = new ResponseCardPayload
+                        {
+                            MsTeams = new CardAction
+                            {
+                                Type = ActionTypes.MessageBack,
+                                // TODO should be a localized text: String.XXXXXX
+                                DisplayText = "Proceder a petición de equipo sobremesa",
+                                Text = Constants.ShowComputerRequestDetailsCommand,
                             },
                         },
                     },
