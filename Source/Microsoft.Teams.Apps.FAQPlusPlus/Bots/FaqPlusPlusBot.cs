@@ -766,9 +766,19 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
         {
             if (!string.IsNullOrEmpty(message.ReplyToId) && (message.Value != null) && ((JObject)message.Value).HasValues)
             {
-                this.logger.LogInformation("Card submit in 1:1 chat");
-                await this.OnAdaptiveCardSubmitInPersonalChatAsync(message, turnContext, cancellationToken).ConfigureAwait(false);
-                return;
+
+                bool isUserDetails = "AskUserDetailsCardPayload".Equals(((JObject)message.Value).GetType().Name);
+                bool isCableRequestDetails = "AskCableRequestDetailsCardPayload".Equals(((JObject)message.Value).GetType().Name);
+                bool isComputerRequestDetails = "AskComputerRequestDetailsCardPayload".Equals(((JObject)message.Value).GetType().Name);
+                this.logger.LogInformation("Current class [" + ((JObject)message.Value).GetType().Name + "] - Flag isUserDetails ["
+                    + isUserDetails + "] - Flag isCableRequestDetails ["
+                    + isCableRequestDetails + "] - Flag isComputerRequestDetails [" + isComputerRequestDetails + "]");
+                if (!isUserDetails && !isCableRequestDetails && !isCableRequestDetails)
+                {
+                    this.logger.LogInformation("Card submit in 1:1 chat");
+                    await this.OnAdaptiveCardSubmitInPersonalChatAsync(message, turnContext, cancellationToken).ConfigureAwait(false);
+                    return;
+                }
             }
 
             string text = message.Text?.ToLower()?.Trim() ?? string.Empty;
