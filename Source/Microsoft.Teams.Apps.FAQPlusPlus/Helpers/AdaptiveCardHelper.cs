@@ -31,7 +31,12 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Helpers
             ILogger<FaqPlusPlusBot> logger)
         {
             logger.LogInformation("AskUserDetailsSubmitText - start");
-            var askUserDetailsSubmitTextPayload = ((JObject)message.Value).ToObject<AskUserDetailsCardPayload>();
+            AskUserDetailsCardPayload askUserDetailsSubmitTextPayload = new AskUserDetailsCardPayload();
+            if ((message.Value != null) && ((JObject)message.Value).HasValues)
+            {
+                logger.LogInformation("AskUserDetailsSubmitText - message has data");
+                askUserDetailsSubmitTextPayload = ((JObject)message.Value).ToObject<AskUserDetailsCardPayload>();
+            }
             logger.LogInformation("AskUserDetailsSubmitText - process");
 
             // Validate required fields.
@@ -44,7 +49,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Helpers
                     Attachments = new List<Attachment> { ResponseCard.GetNewUserCard(askUserDetailsSubmitTextPayload) },
                 };
                 logger.LogInformation("AskUserDetailsSubmitText - call UpdateActivityAsync");
-                //await turnContext.UpdateActivityAsync(updateCardActivity, cancellationToken).ConfigureAwait(false);
+                await turnContext.UpdateActivityAsync(updateCardActivity, cancellationToken).ConfigureAwait(false);
                 logger.LogInformation("AskUserDetailsSubmitText - finish without data");
                 return null;
             }
