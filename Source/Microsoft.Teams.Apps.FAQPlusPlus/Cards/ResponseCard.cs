@@ -395,5 +395,120 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
 
             return actionsList;
         }
+
+        public static Attachment GetNewUserCard(AskUserDetailsCardPayload cardPayload)
+        {
+            AdaptiveCard responseCard = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
+            {
+                Body = new List<AdaptiveElement>
+                {
+                    new AdaptiveTextBlock
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Text = "Formulario usuario nuevo",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskUserDetailsCardPayload.Name),
+                        Placeholder = "nombre",
+                        IsMultiline = false,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = cardPayload?.Name,
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = "Apellido: ",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskUserDetailsCardPayload.Surname),
+                        Placeholder = "apellido",
+                        IsMultiline = true,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = cardPayload?.Surname,
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = "Departamento: ",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskUserDetailsCardPayload.Department),
+                        Placeholder = "departamento",
+                        IsMultiline = true,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = cardPayload?.Department,
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = "Responsable: ",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskUserDetailsCardPayload.Responsible),
+                        Placeholder = "responsable",
+                        IsMultiline = true,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = cardPayload?.Responsible,
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = "Fecha alta: ",
+                        Wrap = true,
+                    },
+                    new AdaptiveTextInput
+                    {
+                        Id = nameof(AskUserDetailsCardPayload.CreateDate),
+                        Placeholder = "fecha alta",
+                        IsMultiline = true,
+                        Spacing = AdaptiveSpacing.Small,
+                        Value = cardPayload?.CreateDate,
+                    },
+                },
+                Actions = new List<AdaptiveAction>
+                {
+                    new AdaptiveSubmitAction
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Title = "Alta de Usuario",
+                        Data = new ResponseCardPayload
+                        {
+                            MsTeams = new CardAction
+                            {
+                                Type = ActionTypes.MessageBack,
+                                // TODO should be a localized text: String.XXXXXX
+                                DisplayText = "Proceder a alta usuario",
+                                Text = Constants.ShowUserDetailsCommand,
+                            },
+                        },
+                    },
+                    new AdaptiveSubmitAction
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Title = "Cancelar",
+                        Data = new ResponseCardPayload
+                        {
+                            MsTeams = new CardAction
+                            {
+                                Type = ActionTypes.MessageBack,
+                                // TODO should be a localized text: String.XXXXXX
+                                DisplayText = "Cancelar",
+                                Text = Constants.CancelCommand,
+                            },
+                        },
+                    },
+                },
+            };
+
+            return new Attachment
+            {
+                ContentType = AdaptiveCard.ContentType,
+                Content = responseCard,
+            };
+        }
     }
 }
