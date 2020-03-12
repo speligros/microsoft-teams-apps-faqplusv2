@@ -39,13 +39,13 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Common
         /// </summary>
         public const string GoodbyeCommand = "despedida";
 
-        public const string NewUserCommand = "proceder a alta usuario";
+        public const string NewUserCommand = "proceder_a_alta_usuario";
 
-        public const string ShowUserDetailsCommand = "mostrar detalles de usuario";
+        public const string ShowUserDetailsCommand = "mostrar_detalles_de_usuario";
 
-        public const string NewCableRequestCommand = "proceder a petición cable";
+        public const string NewCableRequestCommand = "proceder_a_petición_cable";
 
-        public const string ShowCableRequestDetailsCommand = "mostrar detalles de petición de cable";
+        public const string ShowCableRequestDetailsCommand = "mostrar_detalles_de_petición_de_cable";
 
 
         /// <summary>
