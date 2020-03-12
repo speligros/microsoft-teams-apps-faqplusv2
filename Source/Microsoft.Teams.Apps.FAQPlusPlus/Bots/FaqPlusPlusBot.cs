@@ -786,8 +786,14 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                 case Constants.NewUserCommand:
                     this.logger.LogInformation("Proceeding to create a new user");
                     //await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewUserCard())).ConfigureAwait(false);
-                    await AdaptiveCardHelper.AskUserDetailsSubmitText(message, turnContext, cancellationToken).ConfigureAwait(false);
-                    //reference: var data = await AdaptiveCardHelper.AskAnExpertSubmitText(message, turnContext, cancellationToken).ConfigureAwait(false);
+                    var userDetails = await AdaptiveCardHelper.AskUserDetailsSubmitText(message, turnContext, cancellationToken).ConfigureAwait(false);
+                    //newTicket = await AdaptiveCardHelper.AskAnExpertSubmitText(message, turnContext, cancellationToken, this.ticketsProvider).ConfigureAwait(false);
+                    if (userDetails != null)
+                    {
+                        this.logger.LogInformation("User details returned");
+                        //smeTeamCard = new SmeTicketCard(newTicket).ToAttachment(message?.LocalTimestamp);
+                        //userCard = new UserNotificationCard(newTicket).ToAttachment(Strings.NotificationCardContent, message?.LocalTimestamp);
+                    }
                     break;
 
                 case Constants.ShowUserDetailsCommand:

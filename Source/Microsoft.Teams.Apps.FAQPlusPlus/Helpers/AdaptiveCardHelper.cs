@@ -8,6 +8,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Helpers
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
@@ -16,6 +17,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Helpers
     using Microsoft.Teams.Apps.FAQPlusPlus.Common.Providers;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
+    using Microsoft.Teams.Apps.FAQPlusPlus.Bots;
 
     /// <summary>
     /// Adaptive card helper class for tickets.
@@ -25,9 +27,12 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Helpers
         public static async Task<TeamsChannelAccount> AskUserDetailsSubmitText(
             IMessageActivity message,
             ITurnContext<IMessageActivity> turnContext,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            ILogger<FaqPlusPlusBot> logger)
         {
+            logger.LogInformation("AskUserDetailsSubmitText - start");
             var askUserDetailsSubmitTextPayload = ((JObject)message.Value).ToObject<AskUserDetailsCardPayload>();
+            logger.LogInformation("AskUserDetailsSubmitText - process");
 
             // Validate required fields.
             if (string.IsNullOrWhiteSpace(askUserDetailsSubmitTextPayload?.Name))
@@ -38,11 +43,15 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Helpers
                     Conversation = turnContext.Activity.Conversation,
                     Attachments = new List<Attachment> { ResponseCard.GetNewUserCard(askUserDetailsSubmitTextPayload) },
                 };
-                await turnContext.UpdateActivityAsync(updateCardActivity, cancellationToken).ConfigureAwait(false);
+                logger.LogInformation("AskUserDetailsSubmitText - call UpdateActivityAsync");
+                //await turnContext.UpdateActivityAsync(updateCardActivity, cancellationToken).ConfigureAwait(false);
+                logger.LogInformation("AskUserDetailsSubmitText - finish without data");
                 return null;
             }
 
+            logger.LogInformation("AskUserDetailsSubmitText - call GetUserDetailsInPersonalChatAsync");
             var userDetails = await GetUserDetailsInPersonalChatAsync(turnContext, cancellationToken).ConfigureAwait(false);
+            logger.LogInformation("AskUserDetailsSubmitText - finish with data");
             return userDetails;
         }
 
