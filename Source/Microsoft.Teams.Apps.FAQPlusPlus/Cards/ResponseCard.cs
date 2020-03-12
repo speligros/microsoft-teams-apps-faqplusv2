@@ -12,7 +12,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
     using Microsoft.Teams.Apps.FAQPlusPlus.Common.Models;
     using Microsoft.Teams.Apps.FAQPlusPlus.Properties;
     using Microsoft.Azure.CognitiveServices.Knowledge.QnAMaker.Models;
-
+    
     /// <summary>
     ///  This class process Response Card- Response by bot when user asks a question to bot.
     /// </summary>
@@ -292,7 +292,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                     new AdaptiveTextBlock
                     {
                         // TODO should be a localized text: String.XXXXXX
-                        Text = "Detalles de usuario",
+                        Text = "Usuario procesado, se ha creado el usuario: User" + (new System.Random()).Next(111,999),
                         Wrap = true,
                     },
                 },
