@@ -817,9 +817,6 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                 case Constants.ShareFeedback:
                     this.logger.LogInformation("Sending user feedback card");
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(ShareFeedbackCard.GetCard())).ConfigureAwait(false);
-                    // TODO should be a localized text: String.XXXXXX
-                    string responseText = "Genial, dime si puedo ayudarte en algo más";
-                    await turnContext.SendActivityAsync(MessageFactory.Text(responseText, responseText)).ConfigureAwait(false);
                     break;
 
                 case Constants.TakeATour:
