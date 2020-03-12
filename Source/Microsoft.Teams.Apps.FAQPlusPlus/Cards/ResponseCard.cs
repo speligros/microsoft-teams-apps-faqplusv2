@@ -396,16 +396,16 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
             return actionsList;
         }
 
-        private static Attachment GetUserDetailsCard(AskUserDetailsCardPayload cardPayload)
+        public static Attachment GetNewUserCard(AskUserDetailsCardPayload cardPayload)
         {
-            AdaptiveCard askUserDetailsCard = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
+            AdaptiveCard responseCard = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
             {
                 Body = new List<AdaptiveElement>
                 {
                     new AdaptiveTextBlock
                     {
                         // TODO should be a localized text: String.XXXXXX
-                        Text = "Nuevo Usuario",
+                        Text = "Formulario usuario nuevo",
                         Wrap = true,
                     },
                     new AdaptiveTextInput
@@ -473,17 +473,32 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
                 {
                     new AdaptiveSubmitAction
                     {
-                        Title = Strings.AskAnExpertButtonText,
-                        Data = new AskAnExpertCardPayload
+                        // TODO should be a localized text: String.XXXXXX
+                        Title = "Alta de Usuario",
+                        Data = new ResponseCardPayload
                         {
                             MsTeams = new CardAction
                             {
                                 Type = ActionTypes.MessageBack,
-                                DisplayText = Strings.AskAnExpertDisplayText,
-                                Text = AskAnExpertSubmitText,
+                                // TODO should be a localized text: String.XXXXXX
+                                DisplayText = "Proceder a alta usuario",
+                                Text = Constants.ShowUserDetailsCommand,
                             },
-                            UserQuestion = cardPayload?.UserQuestion,
-                            KnowledgeBaseAnswer = cardPayload?.KnowledgeBaseAnswer,
+                        },
+                    },
+                    new AdaptiveSubmitAction
+                    {
+                        // TODO should be a localized text: String.XXXXXX
+                        Title = "Cancelar",
+                        Data = new ResponseCardPayload
+                        {
+                            MsTeams = new CardAction
+                            {
+                                Type = ActionTypes.MessageBack,
+                                // TODO should be a localized text: String.XXXXXX
+                                DisplayText = "Cancelar",
+                                Text = Constants.CancelCommand,
+                            },
                         },
                     },
                 },
@@ -492,7 +507,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Cards
             return new Attachment
             {
                 ContentType = AdaptiveCard.ContentType,
-                Content = askAnExpertCard,
+                Content = responseCard,
             };
         }
     }

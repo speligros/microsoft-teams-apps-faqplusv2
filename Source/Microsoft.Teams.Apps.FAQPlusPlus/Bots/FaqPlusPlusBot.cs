@@ -785,7 +785,9 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             switch (topIntent.intent) {
                 case Constants.NewUserCommand:
                     this.logger.LogInformation("Proceeding to create a new user");
-                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewUserCard())).ConfigureAwait(false);
+                    //await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewUserCard())).ConfigureAwait(false);
+                    await AdaptiveCardHelper.AskUserDetailsSubmitText(message, turnContext, cancellationToken).ConfigureAwait(false);
+                    //reference: var data = await AdaptiveCardHelper.AskAnExpertSubmitText(message, turnContext, cancellationToken).ConfigureAwait(false);
                     break;
 
                 case Constants.ShowUserDetailsCommand:

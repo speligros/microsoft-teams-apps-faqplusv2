@@ -22,6 +22,31 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Helpers
     /// </summary>
     public static class AdaptiveCardHelper
     {
+        public static async Task<TeamsChannelAccount> AskUserDetailsSubmitText(
+            IMessageActivity message,
+            ITurnContext<IMessageActivity> turnContext,
+            CancellationToken cancellationToken)
+        {
+            var askUserDetailsSubmitTextPayload = ((JObject)message.Value).ToObject<AskUserDetailsCardPayload>();
+
+            // Validate required fields.
+            if (string.IsNullOrWhiteSpace(askUserDetailsSubmitTextPayload?.Name))
+            {
+                var updateCardActivity = new Activity(ActivityTypes.Message)
+                {
+                    Id = turnContext.Activity.ReplyToId,
+                    Conversation = turnContext.Activity.Conversation,
+                    Attachments = new List<Attachment> { ResponseCard.GetNewUserCard(askUserDetailsSubmitTextPayload) },
+                };
+                await turnContext.UpdateActivityAsync(updateCardActivity, cancellationToken).ConfigureAwait(false);
+                return null;
+            }
+
+            var userDetails = await GetUserDetailsInPersonalChatAsync(turnContext, cancellationToken).ConfigureAwait(false);
+            return userDetails;
+        }
+
+
         /// <summary>
         /// Helps to get the expert submit card.
         /// </summary>
