@@ -764,6 +764,8 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken)
         {
+
+
             string text = message.Text?.ToLower()?.Trim() ?? string.Empty;
 
             if (!this.luisServiceProvider.IsConfigured()) {
@@ -776,27 +778,10 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             var topIntent = luisResult.GetTopScoringIntent();
             this.logger.LogInformation("LUIS identified intent [" + topIntent.intent + "] with score [" + topIntent.score + "] for the following input [" + text + "]");
 
-            //if (!string.IsNullOrEmpty(message.ReplyToId) && (message.Value != null) && ((JObject)message.Value).HasValues)
-            if ("NONE".Equals(topIntent.intent) &&!string.IsNullOrEmpty(message.ReplyToId) && (message.Value != null) && ((JObject)message.Value).HasValues)
-            {
-                this.logger.LogInformation("Card submit in 1:1 chat");
-                await this.OnAdaptiveCardSubmitInPersonalChatAsync(message, turnContext, cancellationToken).ConfigureAwait(false);
-                return;
-            }
-
             switch (topIntent.intent) {
                 case Constants.NewUserCommand:
                     this.logger.LogInformation("Proceeding to create a new user");
-                    //await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewUserCard())).ConfigureAwait(false);
-                    var userDetails = await AdaptiveCardHelper.AskUserDetailsSubmitText(message, turnContext, cancellationToken, this.logger).ConfigureAwait(false);
-                    //newTicket = await AdaptiveCardHelper.AskAnExpertSubmitText(message, turnContext, cancellationToken, this.ticketsProvider).ConfigureAwait(false);
-                    if (userDetails != null)
-                    {
-                        this.logger.LogInformation("User details returned");
-                        //smeTeamCard = new SmeTicketCard(newTicket).ToAttachment(message?.LocalTimestamp);
-                        //userCard = new UserNotificationCard(newTicket).ToAttachment(Strings.NotificationCardContent, message?.LocalTimestamp);
-                        await turnContext.SendActivityAsync(MessageFactory.Text("DUMMY", "DUMMY")).ConfigureAwait(false);
-                    }
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewUserFormCard())).ConfigureAwait(false);
                     break;
 
                 case Constants.ShowUserDetailsCommand:
@@ -806,12 +791,22 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
 
                 case Constants.NewCableRequestCommand:
                     this.logger.LogInformation("Proceeding to create a new cable request");
-                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewCableRequestCard())).ConfigureAwait(false);
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewCableRequestFormCard())).ConfigureAwait(false);
                     break;
 
                 case Constants.ShowCableRequestDetailsCommand:
                     this.logger.LogInformation("Showing cable request details");
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetCableRequestDetailsCard())).ConfigureAwait(false);
+                    break;
+
+                case Constants.NewComputerRequestCommand:
+                    this.logger.LogInformation("Proceeding to create a new computer request");
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetNewComputerRequestFormCard())).ConfigureAwait(false);
+                    break;
+
+                case Constants.ShowComputerRequestDetailsCommand:
+                    this.logger.LogInformation("Showing computer request details");
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(ResponseCard.GetComputerRequestDetailsCard())).ConfigureAwait(false);
                     break;
 
                 case Constants.AskAnExpert:
@@ -823,7 +818,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     this.logger.LogInformation("Sending user feedback card");
                     await turnContext.SendActivityAsync(MessageFactory.Attachment(ShareFeedbackCard.GetCard())).ConfigureAwait(false);
                     // TODO should be a localized text: String.XXXXXX
-                    string responseText = "Genial, dime si puedo ayudarte en algo m�s";
+                    string responseText = "Genial, dime si puedo ayudarte en algo más";
                     await turnContext.SendActivityAsync(MessageFactory.Text(responseText, responseText)).ConfigureAwait(false);
                     break;
 
@@ -837,7 +832,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     // TODO verify it comes from the question "Was it helpful?"
                     this.logger.LogInformation("Yes option");
                     // TODO should be a localized text: String.XXXXXX
-                    string yesResponseText = "Genial, dime si puedo ayudarte en algo m�s";
+                    string yesResponseText = "Genial, dime si puedo ayudarte en algo más";
                     await turnContext.SendActivityAsync(MessageFactory.Text(yesResponseText, yesResponseText)).ConfigureAwait(false);
                     break;
 
@@ -867,11 +862,26 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                 case Constants.CancelCommand:
                     this.logger.LogInformation("Cancel option");
                     // TODO should be a localized text: String.XXXXXX
-                    string CancelResponseText = "Cancelada";
+                    string CancelResponseText = "Petición cancelada";
                     await turnContext.SendActivityAsync(MessageFactory.Text(CancelResponseText, CancelResponseText)).ConfigureAwait(false);
                     break;
 
                 default:
+                    if (!string.IsNullOrEmpty(message.ReplyToId) && (message.Value != null) && ((JObject)message.Value).HasValues)
+                    {
+                        bool hasUserQuestion = (((JObject)message.Value).Property("UserQuestion") != null);
+                        bool hasKnowledgeBaseAnswer = (((JObject)message.Value).Property("KnowledgeBaseAnswer") != null);
+                        this.logger.LogInformation("Current message containsUserQuestion [" + ((JObject)message.Value).ContainsKey("UserQuestion") 
+                            + "] - Flag hasUserQuestion ["
+                            + hasUserQuestion + "] - Flag hasKnowledgeBaseAnswer ["
+                            + hasKnowledgeBaseAnswer + "]");
+                        if (hasUserQuestion || hasKnowledgeBaseAnswer)
+                        {
+                            this.logger.LogInformation("Card submit in 1:1 chat");
+                            await this.OnAdaptiveCardSubmitInPersonalChatAsync(message, turnContext, cancellationToken).ConfigureAwait(false);
+                            return;
+                        }
+                    }
                     // Send to QNA
                     this.logger.LogInformation("Sending input to QnAMaker");
                     await this.GetQuestionAnswerReplyAsync(turnContext, text).ConfigureAwait(false);
