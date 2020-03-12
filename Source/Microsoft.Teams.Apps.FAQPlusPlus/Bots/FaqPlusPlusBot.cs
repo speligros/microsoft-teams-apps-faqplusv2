@@ -764,22 +764,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken)
         {
-            if (!string.IsNullOrEmpty(message.ReplyToId) && (message.Value != null) && ((JObject)message.Value).HasValues)
-            {
 
-                bool isUserDetails = "AskUserDetailsCardPayload".Equals(((JObject)message.Value).GetType().Name);
-                bool isCableRequestDetails = "AskCableRequestDetailsCardPayload".Equals(((JObject)message.Value).GetType().Name);
-                bool isComputerRequestDetails = "AskComputerRequestDetailsCardPayload".Equals(((JObject)message.Value).GetType().Name);
-                this.logger.LogInformation("Current class [" + ((JObject)message.Value).GetType().Name + "] - Flag isUserDetails ["
-                    + isUserDetails + "] - Flag isCableRequestDetails ["
-                    + isCableRequestDetails + "] - Flag isComputerRequestDetails [" + isComputerRequestDetails + "]");
-                if (!isUserDetails && !isCableRequestDetails && !isCableRequestDetails)
-                {
-                    this.logger.LogInformation("Card submit in 1:1 chat");
-                    await this.OnAdaptiveCardSubmitInPersonalChatAsync(message, turnContext, cancellationToken).ConfigureAwait(false);
-                    return;
-                }
-            }
 
             string text = message.Text?.ToLower()?.Trim() ?? string.Empty;
 
@@ -882,6 +867,21 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                     break;
 
                 default:
+                    if (!string.IsNullOrEmpty(message.ReplyToId) && (message.Value != null) && ((JObject)message.Value).HasValues)
+                    {
+                        bool hasUserQuestion = (((JObject)message.Value).Property("UserQuestion") != null);
+                        bool hasKnowledgeBaseAnswer = (((JObject)message.Value).Property("KnowledgeBaseAnswer") != null);
+                        this.logger.LogInformation("Current message containsUserQuestion [" + ((JObject)message.Value).ContainsKey("UserQuestion") 
+                            + "] - Flag hasUserQuestion ["
+                            + hasUserQuestion + "] - Flag hasKnowledgeBaseAnswer ["
+                            + hasKnowledgeBaseAnswer + "]");
+                        if (hasUserQuestion || hasKnowledgeBaseAnswer)
+                        {
+                            this.logger.LogInformation("Card submit in 1:1 chat");
+                            await this.OnAdaptiveCardSubmitInPersonalChatAsync(message, turnContext, cancellationToken).ConfigureAwait(false);
+                            return;
+                        }
+                    }
                     // Send to QNA
                     this.logger.LogInformation("Sending input to QnAMaker");
                     await this.GetQuestionAnswerReplyAsync(turnContext, text).ConfigureAwait(false);
