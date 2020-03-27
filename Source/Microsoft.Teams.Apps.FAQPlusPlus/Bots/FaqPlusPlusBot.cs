@@ -120,6 +120,8 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             IOptionsMonitor<BotSettings> optionsAccessor,
             ILogger<FaqPlusPlusBot> logger)
         {
+            this.logger.LogInformation($"FaqPlusPlusBot - Starting instance", SeverityLevel.Information);
+
             this.configurationProvider = configurationProvider;
             this.microsoftAppCredentials = microsoftAppCredentials;
             this.ticketsProvider = ticketsProvider;
@@ -142,6 +144,8 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
 
             this.appBaseUri = this.options.AppBaseUri;
             this.knowledgeBaseSearchService = knowledgeBaseSearchService;
+
+            this.logger.LogInformation($"FaqPlusPlusBot - Instance started!", SeverityLevel.Information);
         }
 
         /// <summary>
