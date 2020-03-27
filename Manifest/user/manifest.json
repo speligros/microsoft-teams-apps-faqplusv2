@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
   "manifestVersion": "1.5",
   "version": "1.0.0",
-  "id": "aba30cfc-05df-4002-b956-a70996b12a54",
-  "packageName": "com.microsoft.teams.faqplus",
+  "id": "98fc546e-ef74-42cb-8a16-9e7df8c9851f",
+  "packageName": "com.microsoft.teams.teav1",
   "developer": {
     "name": "everis",
     "websiteUrl": "http://www.everis.com",
@@ -15,16 +15,16 @@
     "outline": "mini.png"
   },
   "name": {
-    "short": "ZBot"
+    "short": "Teav1"
   },
   "description": {
-    "short": "Asistente Virtual PoC para Zurich.",
-    "full": "Asistente Virtual PoC para Zurich."
+    "short": "Asistente en Teams de everis",
+    "full": "Asistente en Teams de everis"
   },
   "accentColor": "#64A2CC",
   "bots": [
     {
-      "botId": "faa9d0ef-e95c-4868-bbe2-c57ab6500ca7",
+      "botId": "a0f0fb22-aa7a-498e-bfb9-8036ff8abf1b",
       "scopes": [
         "personal",
         "team"
@@ -78,6 +78,6 @@
     "messageTeamMembers"
   ],
   "validDomains": [
-    "ezbotfaq2v1.azurewebsites.net"
+    "teav1.azurewebsites.net"
   ]
 }
