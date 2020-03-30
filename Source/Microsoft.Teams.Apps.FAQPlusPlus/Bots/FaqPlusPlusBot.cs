@@ -120,6 +120,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             IOptionsMonitor<BotSettings> optionsAccessor,
             ILogger<FaqPlusPlusBot> logger)
         {
+            this.logger = logger;
             this.logger.LogInformation($"FaqPlusPlusBot - Starting instance", SeverityLevel.Information);
 
             this.configurationProvider = configurationProvider;
@@ -133,7 +134,6 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             this.appId = this.options.MicrosoftAppId;
             this.botAdapter = botAdapter;
             this.accessCache = memoryCache;
-            this.logger = logger;
             this.accessCacheExpiryInDays = this.options.AccessCacheExpiryInDays;
 
             if (this.accessCacheExpiryInDays <= 0)
