@@ -204,15 +204,12 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             {
                 var message = turnContext?.Activity;
                 this.logger.LogInformation($"from: {message.From?.Id}, conversation: {message.Conversation.Id}, replyToId: {message.ReplyToId}");
-                await this.SendTypingIndicatorAsync(turnContext).ConfigureAwait(false);
-
-                this.logger.LogWarning($"conversacion - message.Conversation: {message.Conversation}");
-                this.logger.LogWarning($"conversacion - message.Conversation.ConversationType: {message.Conversation.ConversationType}");
+                // This method is commented because provokes a fail in the system, it seems the activity status change is not working anymore
+                // await this.SendTypingIndicatorAsync(turnContext).ConfigureAwait(false);
 
                 switch (message.Conversation.ConversationType.ToLower())
                 {
                     case ConversationTypePersonal:
-                        this.logger.LogWarning($"conversacion - OnMessageActivityInPersonalChatAsync");
                         await this.OnMessageActivityInPersonalChatAsync(
                             message,
                             turnContext,
@@ -220,7 +217,6 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                         break;
 
                     case ConversationTypeChannel:
-                        this.logger.LogWarning($"conversacion - OnMessageActivityInChannelAsync");
                         await this.OnMessageActivityInChannelAsync(
                             message,
                             turnContext,
