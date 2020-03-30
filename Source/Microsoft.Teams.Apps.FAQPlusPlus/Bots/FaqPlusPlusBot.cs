@@ -134,6 +134,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
             this.appId = this.options.MicrosoftAppId;
             this.botAdapter = botAdapter;
             this.accessCache = memoryCache;
+
             this.accessCacheExpiryInDays = this.options.AccessCacheExpiryInDays;
 
             if (this.accessCacheExpiryInDays <= 0)
@@ -205,9 +206,13 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                 this.logger.LogInformation($"from: {message.From?.Id}, conversation: {message.Conversation.Id}, replyToId: {message.ReplyToId}");
                 await this.SendTypingIndicatorAsync(turnContext).ConfigureAwait(false);
 
+                this.logger.LogWarning($"conversacion - message.Conversation: {message.Conversation}");
+                this.logger.LogWarning($"conversacion - message.Conversation.ConversationType: {message.Conversation.ConversationType}");
+
                 switch (message.Conversation.ConversationType.ToLower())
                 {
                     case ConversationTypePersonal:
+                        this.logger.LogWarning($"conversacion - OnMessageActivityInPersonalChatAsync");
                         await this.OnMessageActivityInPersonalChatAsync(
                             message,
                             turnContext,
@@ -215,6 +220,7 @@ namespace Microsoft.Teams.Apps.FAQPlusPlus.Bots
                         break;
 
                     case ConversationTypeChannel:
+                        this.logger.LogWarning($"conversacion - OnMessageActivityInChannelAsync");
                         await this.OnMessageActivityInChannelAsync(
                             message,
                             turnContext,
